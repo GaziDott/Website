@@ -6,8 +6,8 @@
    Data changes are stored in browser localStorage.
    ======================================== */
 
-const ADMIN_SESSION_KEY = 'dott-admin-session';
-const ADMIN_PASSWORD_HASH_KEY = 'dott-admin-password-hash';
+const ADMIN_SESSION_KEY = 'dott-admin-session-v2';
+const ADMIN_PASSWORD_HASH = 'fdd82c3a8023fb399d912de0c27d1d62c949bb3d3ead505af9a9a15c88c08910';
 const ADMIN_DIRTY_KEY = 'dott-admin-unsynced-changes';
 const EVENT_IMAGE_DELETION_KEY = 'dott-pending-event-image-deletions';
 const EVENT_IMAGE_MAX_SOURCE_BYTES = 12 * 1024 * 1024;
@@ -46,8 +46,7 @@ async function isAdminAuthenticated() {
 }
 
 /**
- * Login with stored password hash.
- * First successful login initializes the password for this browser.
+ * Compare against the fixed access password without storing it as plaintext.
  */
 async function adminLogin(password) {
     const value = String(password || '').trim();
@@ -55,15 +54,7 @@ async function adminLogin(password) {
 
     try {
         const providedHash = await sha256(value);
-        const storedHash = localStorage.getItem(ADMIN_PASSWORD_HASH_KEY);
-
-        if (!storedHash) {
-            localStorage.setItem(ADMIN_PASSWORD_HASH_KEY, providedHash);
-            sessionStorage.setItem(ADMIN_SESSION_KEY, '1');
-            return true;
-        }
-
-        if (storedHash === providedHash) {
+        if (providedHash === ADMIN_PASSWORD_HASH) {
             sessionStorage.setItem(ADMIN_SESSION_KEY, '1');
             return true;
         }

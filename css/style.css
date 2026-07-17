@@ -689,12 +689,20 @@ body.event-detail-open {
         height: calc(100dvh - 16px);
     }
 
+    .event-detail-dialog > [data-event-detail-content] {
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+
     .event-detail-layout {
-        grid-template-columns: 1fr;
-        grid-template-rows: minmax(250px, 42dvh) minmax(0, 1fr);
+        display: block;
+        height: auto;
+        min-height: 100%;
     }
 
     .event-detail-media {
+        display: block;
+        height: auto;
         padding: 44px 16px 14px;
         border-right: 0;
         border-bottom: 1px solid var(--dott-border);
@@ -709,8 +717,16 @@ body.event-detail-open {
         left: 16px;
     }
 
+    .event-detail-media img {
+        width: 100%;
+        height: auto;
+        max-height: none;
+    }
+
     .event-detail-content {
+        height: auto;
         padding: 28px 20px 32px;
+        overflow: visible;
         scrollbar-gutter: auto;
     }
 
