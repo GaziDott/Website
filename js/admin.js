@@ -1433,8 +1433,8 @@ function updateColorPicker(color) {
    GitHub Synchronization (Option 1)
    ======================================== */
 
-const GITHUB_REPO = 'BatuhanCanal/DottWebsite';
-const GITHUB_BRANCH = 'static';
+const GITHUB_REPO = 'GaziDott/Website';
+const GITHUB_BRANCH = 'main';
 const GITHUB_TOKEN_KEY = 'dott_github_token'; // Used for cookie
 
 // --- Cookie Helpers ---

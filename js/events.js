@@ -229,6 +229,23 @@ function getEventLinkLabel(link) {
         : (link.label_en || link.label_tr || t('events.details'));
 }
 
+function getEventDetailCardAttributes(event) {
+    const eventId = escapeHTML(event.id);
+    const title = escapeHTML(getEventTitle(event));
+    const label = escapeHTML(`${t('events.viewDetails')}: ${getEventTitle(event)}`);
+    return `data-event-detail-id="${eventId}" tabindex="0" aria-haspopup="dialog" aria-label="${label}" title="${title}"`;
+}
+
+function renderEventDetailButton(event, compact = false) {
+    const eventId = escapeHTML(event.id);
+    const sizeClasses = compact ? 'min-h-8 px-2.5 text-xs' : 'min-h-9 px-3 text-xs';
+    return `<button type="button" data-event-detail-open="${eventId}"
+        class="event-detail-open-button inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-border-dark ${sizeClasses} font-bold text-text-muted transition-colors hover:border-primary/50 hover:text-primary">
+        <span class="material-symbols-outlined text-[17px]" aria-hidden="true">open_in_full</span>
+        <span>${escapeHTML(t('events.viewDetails'))}</span>
+    </button>`;
+}
+
 /**
  * Color map for category badges (uses shared COLOR_CONFIG from common.js)
  */
@@ -315,7 +332,7 @@ function renderEventActions(event, className = '') {
         const url = escapeHTML(link.url);
         return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="${className}" aria-label="${label}">
             <span class="max-w-40 truncate">${label}</span>
-            <span class="material-symbols-outlined text-[16px]">north_east</span>
+            <span class="material-symbols-outlined text-[16px]" aria-hidden="true">north_east</span>
         </a>`;
     }).join('');
 }
@@ -333,7 +350,7 @@ function renderFeaturedCard(event) {
     const actions = renderEventActions(event, 'inline-flex min-h-9 shrink-0 items-center gap-1 rounded-lg border border-primary/30 bg-primary/10 px-3 text-xs font-bold text-primary transition-colors hover:bg-primary hover:text-background-dark');
 
     return `
-    <article class="hud-panel card-hover image-zoom group h-full">
+    <article class="event-card-trigger hud-panel card-hover image-zoom group h-full" ${getEventDetailCardAttributes(event)}>
         <div class="grid h-full sm:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)]">
             <div class="relative min-h-52 overflow-hidden border-b border-border-dark sm:min-h-full sm:border-b-0 sm:border-r">
                 <img src="${safeImage}" alt="" loading="lazy" class="absolute inset-0 h-full w-full object-cover" />
@@ -359,7 +376,10 @@ function renderFeaturedCard(event) {
                         <span class="material-symbols-outlined text-[16px] text-primary">location_on</span>
                         <span>${safeLocation || ''}</span>
                     </div>
-                    ${actions ? `<div class="flex flex-wrap gap-2 sm:justify-end">${actions}</div>` : ''}
+                    <div class="flex flex-wrap gap-2 sm:justify-end">
+                        ${actions}
+                        ${renderEventDetailButton(event)}
+                    </div>
                 </div>
             </div>
         </div>
@@ -380,7 +400,7 @@ function renderEventCard(event) {
     const actions = renderEventActions(event, 'inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-primary/30 bg-primary/10 px-3 text-xs font-bold text-primary transition-colors hover:bg-primary hover:text-background-dark');
 
     return `
-    <article class="hud-panel card-hover image-zoom group flex h-full flex-col">
+    <article class="event-card-trigger hud-panel card-hover image-zoom group flex h-full flex-col" ${getEventDetailCardAttributes(event)}>
         <div class="relative aspect-[16/9] w-full overflow-hidden border-b border-border-dark">
             <img src="${safeImage}" alt="" loading="lazy" class="absolute inset-0 h-full w-full object-cover" />
             <div class="absolute inset-0 bg-gradient-to-t from-background-dark/95 via-background-dark/10 to-transparent"></div>
@@ -408,7 +428,10 @@ function renderEventCard(event) {
             <p class="line-clamp-3 text-sm leading-6 text-text-muted">${safeDesc}</p>
             <div class="mt-auto flex flex-col gap-3 border-t border-border-dark/70 pt-4 sm:flex-row sm:items-center sm:justify-between">
                 <span class="text-xs capitalize text-text-muted/70">${dayOfWeek}</span>
-                ${actions ? `<div class="flex flex-wrap gap-2 sm:justify-end">${actions}</div>` : ''}
+                <div class="flex flex-wrap gap-2 sm:justify-end">
+                    ${actions}
+                    ${renderEventDetailButton(event)}
+                </div>
             </div>
         </div>
     </article>`;
@@ -426,7 +449,7 @@ function renderPastEventRow(event) {
     const actions = renderEventActions(event, 'inline-flex min-h-8 items-center gap-1 rounded-lg border border-border-dark px-2.5 text-xs font-bold text-text-muted transition-colors hover:border-primary/40 hover:text-primary');
 
     return `
-    <div class="hud-panel-muted block p-3 transition-colors hover:border-primary/35 sm:p-4">
+    <article class="event-card-trigger hud-panel-muted block p-3 transition-colors hover:border-primary/35 sm:p-4" ${getEventDetailCardAttributes(event)}>
         <div class="flex items-start justify-between gap-3 sm:items-center">
             <div class="flex min-w-0 flex-1 flex-wrap items-start gap-2 sm:items-center sm:gap-4">
                 <div class="shrink-0 rounded border border-border-dark bg-background-dark px-2 py-1 font-mono text-[10px] text-primary sm:text-xs">${monthYear}</div>
@@ -434,9 +457,12 @@ function renderPastEventRow(event) {
                 ${getCategoryBadge(event.category)}
                 ${safeLocation ? `<span class="text-xs text-text-muted flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">location_on</span>${safeLocation}</span>` : ''}
             </div>
-            ${actions ? `<div class="flex flex-wrap justify-end gap-2">${actions}</div>` : ''}
+            <div class="flex flex-wrap justify-end gap-2">
+                ${actions}
+                ${renderEventDetailButton(event, true)}
+            </div>
         </div>
-    </div>`;
+    </article>`;
 }
 
 function renderEmptyState(icon, message) {
@@ -444,6 +470,226 @@ function renderEmptyState(icon, message) {
         <span class="material-symbols-outlined mb-4 text-4xl text-primary">${icon}</span>
         <p class="max-w-md text-sm leading-6">${message}</p>
     </div>`;
+}
+
+function renderEventDetailSessions(event) {
+    const sessions = getEventSessions(event);
+    if (sessions.length === 0) return '';
+
+    return `<section class="event-detail-section" aria-labelledby="event-detail-schedule-title">
+        <div class="event-detail-section-heading">
+            <span class="material-symbols-outlined" aria-hidden="true">calendar_month</span>
+            <h3 id="event-detail-schedule-title">${escapeHTML(t('events.schedule'))}</h3>
+        </div>
+        <div class="event-detail-schedule">
+            ${sessions.map((session, index) => {
+                const label = escapeHTML(getSessionLabel(session, index, sessions.length) || t('events.dateLabel'));
+                const dateTime = `${session.date}${session.time ? `T${session.time}` : ''}`;
+                return `<div class="event-detail-session">
+                    <div class="event-detail-session-index" aria-hidden="true">${String(index + 1).padStart(2, '0')}</div>
+                    <div class="event-detail-session-copy">
+                        <strong>${label}</strong>
+                        <time datetime="${escapeHTML(dateTime)}">${formatDate(session.date)}</time>
+                        <span>${formatDayOfWeek(session.date)}</span>
+                    </div>
+                    ${session.time ? `<span class="event-detail-session-time"><span class="material-symbols-outlined" aria-hidden="true">schedule</span>${escapeHTML(session.time)}</span>` : ''}
+                </div>`;
+            }).join('')}
+        </div>
+    </section>`;
+}
+
+function renderEventDetailContent(event) {
+    const safeTitle = escapeHTML(getEventTitle(event));
+    const safeImage = escapeHTML(event.image) || 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&q=85';
+    const safeDescription = escapeHTML(getEventDesc(event)).replace(/\r?\n/g, '<br>');
+    const safeLocation = escapeHTML(event.location);
+    const locationIcon = event.location?.toLowerCase() === 'online' || event.location?.toLowerCase() === 'çevrimiçi'
+        ? 'videocam'
+        : 'location_on';
+    const actions = renderEventActions(event, 'event-detail-action');
+
+    return `<div class="event-detail-layout">
+        <figure class="event-detail-media">
+            <figcaption>${escapeHTML(t('events.poster'))}</figcaption>
+            <img src="${safeImage}" alt="${safeTitle} ${escapeHTML(t('events.posterAlt'))}" decoding="async" />
+        </figure>
+        <div class="event-detail-content">
+            <header class="event-detail-header">
+                <div class="event-detail-category">${getCategoryBadge(event.category)}</div>
+                <h2 id="event-detail-title">${safeTitle}</h2>
+                ${safeLocation ? `<div class="event-detail-location">
+                    <span class="material-symbols-outlined" aria-hidden="true">${locationIcon}</span>
+                    <div>
+                        <span>${escapeHTML(t('events.location'))}</span>
+                        <strong>${safeLocation}</strong>
+                    </div>
+                </div>` : ''}
+            </header>
+
+            ${safeDescription ? `<section class="event-detail-section" aria-labelledby="event-detail-about-title">
+                <div class="event-detail-section-heading">
+                    <span class="material-symbols-outlined" aria-hidden="true">subject</span>
+                    <h3 id="event-detail-about-title">${escapeHTML(t('events.about'))}</h3>
+                </div>
+                <p id="event-detail-description" class="event-detail-description">${safeDescription}</p>
+            </section>` : ''}
+
+            ${renderEventDetailSessions(event)}
+
+            ${actions ? `<section class="event-detail-section event-detail-actions" aria-labelledby="event-detail-actions-title">
+                <div class="event-detail-section-heading">
+                    <span class="material-symbols-outlined" aria-hidden="true">link</span>
+                    <h3 id="event-detail-actions-title">${escapeHTML(t('events.links'))}</h3>
+                </div>
+                <div class="event-detail-action-list">${actions}</div>
+            </section>` : ''}
+        </div>
+    </div>`;
+}
+
+let _eventDetailLastFocus = null;
+let _eventDetailCloseTimer = null;
+let _eventDetailBodyPadding = '';
+let _eventDetailInteractionsReady = false;
+
+function ensureEventDetailModal() {
+    let modal = document.getElementById('event-detail-modal');
+    if (modal) return modal;
+
+    modal = document.createElement('div');
+    modal.id = 'event-detail-modal';
+    modal.className = 'event-detail-modal';
+    modal.hidden = true;
+    modal.setAttribute('aria-hidden', 'true');
+    modal.innerHTML = `<div class="event-detail-backdrop" data-event-detail-close></div>
+        <section class="event-detail-dialog" role="dialog" aria-modal="true" aria-labelledby="event-detail-title" tabindex="-1">
+            <button type="button" class="event-detail-close" data-event-detail-close>
+                <span class="material-symbols-outlined" aria-hidden="true">close</span>
+                <span class="sr-only">${escapeHTML(t('events.closeDetails'))}</span>
+            </button>
+            <div data-event-detail-content></div>
+        </section>`;
+    document.body.appendChild(modal);
+    return modal;
+}
+
+async function openEventDetails(eventId) {
+    await getCategories();
+    const events = await getEvents();
+    const event = events.find(item => String(item.id) === String(eventId));
+    if (!event) return;
+
+    const modal = ensureEventDetailModal();
+    const content = modal.querySelector('[data-event-detail-content]');
+    const closeLabel = modal.querySelector('.event-detail-close .sr-only');
+    content.innerHTML = renderEventDetailContent(event);
+    if (closeLabel) closeLabel.textContent = t('events.closeDetails');
+
+    if (_eventDetailCloseTimer) {
+        clearTimeout(_eventDetailCloseTimer);
+        _eventDetailCloseTimer = null;
+    }
+
+    _eventDetailLastFocus = document.activeElement;
+    _eventDetailBodyPadding = document.body.style.paddingRight;
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    if (scrollbarWidth > 0) document.body.style.paddingRight = `${scrollbarWidth}px`;
+    document.body.classList.add('event-detail-open');
+    modal.hidden = false;
+    modal.setAttribute('aria-hidden', 'false');
+
+    requestAnimationFrame(() => {
+        modal.classList.add('is-open');
+        modal.querySelector('.event-detail-dialog')?.focus({ preventScroll: true });
+    });
+}
+
+function closeEventDetails() {
+    const modal = document.getElementById('event-detail-modal');
+    if (!modal || modal.hidden) return;
+
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('event-detail-open');
+    document.body.style.paddingRight = _eventDetailBodyPadding;
+
+    _eventDetailCloseTimer = setTimeout(() => {
+        modal.hidden = true;
+        _eventDetailCloseTimer = null;
+    }, 220);
+
+    if (_eventDetailLastFocus?.isConnected) {
+        _eventDetailLastFocus.focus({ preventScroll: true });
+    }
+}
+
+function trapEventDetailFocus(event) {
+    const modal = document.getElementById('event-detail-modal');
+    if (!modal?.classList.contains('is-open')) return;
+
+    if (event.key === 'Escape') {
+        event.preventDefault();
+        closeEventDetails();
+        return;
+    }
+
+    if (event.key !== 'Tab') return;
+    const focusable = [...modal.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])')]
+        .filter(element => !element.hidden && element.offsetParent !== null);
+    if (focusable.length === 0) return;
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    const focusIsInsideList = focusable.includes(document.activeElement);
+    if (event.shiftKey && (!focusIsInsideList || document.activeElement === first)) {
+        event.preventDefault();
+        last.focus();
+    } else if (!event.shiftKey && (!focusIsInsideList || document.activeElement === last)) {
+        event.preventDefault();
+        first.focus();
+    }
+}
+
+function initEventDetailInteractions() {
+    if (_eventDetailInteractionsReady) return;
+    _eventDetailInteractionsReady = true;
+
+    document.addEventListener('click', event => {
+        const target = event.target instanceof Element ? event.target : null;
+        if (!target) return;
+
+        if (target.closest('[data-event-detail-close]')) {
+            closeEventDetails();
+            return;
+        }
+
+        const openButton = target.closest('[data-event-detail-open]');
+        if (openButton) {
+            openEventDetails(openButton.dataset.eventDetailOpen);
+            return;
+        }
+
+        const card = target.closest('[data-event-detail-id]');
+        if (!card || target.closest('a, button, input, textarea, select')) return;
+        if (window.getSelection()?.toString()) return;
+        openEventDetails(card.dataset.eventDetailId);
+    });
+
+    document.addEventListener('keydown', event => {
+        trapEventDetailFocus(event);
+        if (event.defaultPrevented || !['Enter', ' '].includes(event.key)) return;
+        const card = event.target instanceof Element ? event.target.closest('[data-event-detail-id]') : null;
+        if (!card || event.target !== card) return;
+        event.preventDefault();
+        openEventDetails(card.dataset.eventDetailId);
+    });
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initEventDetailInteractions, { once: true });
+} else {
+    initEventDetailInteractions();
 }
 
 /**
