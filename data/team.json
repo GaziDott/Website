@@ -1,26 +1,194 @@
 [
   {
-    "id": "member_sample_1",
-    "name": "İsim Soyisim",
+    "id": "mehmet-alper-gulender",
+    "name": "Mehmet Alper Gülender",
     "role_tr": "Başkan",
     "role_en": "President",
-    "photo": "",
+    "photo": "assets/team/mehmet-alper-gulender.webp",
     "order": 0
   },
   {
-    "id": "member_sample_2",
-    "name": "İsim Soyisim",
+    "id": "elif-yagmur",
+    "name": "Elif Yağmur",
     "role_tr": "Başkan Yardımcısı",
     "role_en": "Vice President",
-    "photo": "",
+    "photo": "assets/team/elif-yagmur.webp",
     "order": 1
   },
   {
-    "id": "member_sample_3",
-    "name": "İsim Soyisim",
-    "role_tr": "Koordinatör",
-    "role_en": "Coordinator",
-    "photo": "",
+    "id": "sueda-eken",
+    "name": "Süeda Eken",
+    "role_tr": "Organizasyon Birim Başkanı",
+    "role_en": "Organization Unit Lead",
+    "photo": "assets/team/sueda-eken.webp",
     "order": 2
+  },
+  {
+    "id": "cansu-aydemir",
+    "name": "Cansu Aydemir",
+    "role_tr": "Tasarım Birim Başkanı",
+    "role_en": "Design Unit Lead",
+    "photo": "assets/team/cansu-aydemir.webp",
+    "order": 3
+  },
+  {
+    "id": "gunes-isil-karakus",
+    "name": "Güneş Işıl Karakuş",
+    "role_tr": "Sosyal Medya Birim Başkanı",
+    "role_en": "Social Media Unit Lead",
+    "photo": "assets/team/gunes-isil-karakus.webp",
+    "order": 4
+  },
+  {
+    "id": "egemen-kucuk",
+    "name": "Egemen Küçük",
+    "role_tr": "Organizasyon Birimi",
+    "role_en": "Organization Unit",
+    "photo": "assets/team/egemen-kucuk.webp",
+    "order": 5
+  },
+  {
+    "id": "yavuz-selim-kibiroglu",
+    "name": "Yavuz Selim Kibiroğlu",
+    "role_tr": "Organizasyon Birimi",
+    "role_en": "Organization Unit",
+    "photo": "assets/team/yavuz-selim-kibiroglu.webp",
+    "order": 6
+  },
+  {
+    "id": "mert-kutuk",
+    "name": "Mert Kütük",
+    "role_tr": "Organizasyon Birimi",
+    "role_en": "Organization Unit",
+    "photo": "assets/team/mert-kutuk.webp",
+    "order": 7
+  },
+  {
+    "id": "azra-deveci",
+    "name": "Azra Deveci",
+    "role_tr": "Organizasyon Birimi",
+    "role_en": "Organization Unit",
+    "photo": "",
+    "order": 8
+  },
+  {
+    "id": "akif-akcay",
+    "name": "Akif Akçay",
+    "role_tr": "Organizasyon Birimi",
+    "role_en": "Organization Unit",
+    "photo": "",
+    "order": 9
+  },
+  {
+    "id": "mert-demircioglu",
+    "name": "Mert Demircioğlu",
+    "role_tr": "Organizasyon Birimi",
+    "role_en": "Organization Unit",
+    "photo": "assets/team/mert-demircioglu.webp",
+    "order": 10
+  },
+  {
+    "id": "humeyra-yuce",
+    "name": "Hümeyra Yüce",
+    "role_tr": "Organizasyon Birimi",
+    "role_en": "Organization Unit",
+    "photo": "",
+    "order": 11
+  },
+  {
+    "id": "selen-mercimek",
+    "name": "Selen Mercimek",
+    "role_tr": "Tasarım Birimi",
+    "role_en": "Design Unit",
+    "photo": "assets/team/selen-mercimek.webp",
+    "order": 12
+  },
+  {
+    "id": "mehmet-aras-simsir",
+    "name": "Mehmet Aras Şimşir",
+    "role_tr": "Tasarım Birimi",
+    "role_en": "Design Unit",
+    "photo": "assets/team/mehmet-aras-simsir.webp",
+    "order": 13
+  },
+  {
+    "id": "giray-yazici",
+    "name": "Giray Yazıcı",
+    "role_tr": "Tasarım Birimi",
+    "role_en": "Design Unit",
+    "photo": "assets/team/giray-yazici.webp",
+    "order": 14
+  },
+  {
+    "id": "arda-erkilic",
+    "name": "Arda Erkılıç",
+    "role_tr": "Tasarım Birimi",
+    "role_en": "Design Unit",
+    "photo": "",
+    "order": 15
+  },
+  {
+    "id": "menderes-celik",
+    "name": "Menderes Çelik",
+    "role_tr": "Tasarım Birimi",
+    "role_en": "Design Unit",
+    "photo": "",
+    "order": 16
+  },
+  {
+    "id": "umut-ergun",
+    "name": "Umut Ergün",
+    "role_tr": "Tasarım Birimi",
+    "role_en": "Design Unit",
+    "photo": "",
+    "order": 17
+  },
+  {
+    "id": "didem-tekbudak",
+    "name": "Didem Tekbudak",
+    "role_tr": "Tasarım Birimi",
+    "role_en": "Design Unit",
+    "photo": "assets/team/didem-tekbudak.webp",
+    "order": 18
+  },
+  {
+    "id": "batuhan-canal",
+    "name": "Batuhan Canal",
+    "role_tr": "Sosyal Medya Birimi",
+    "role_en": "Social Media Unit",
+    "photo": "assets/team/batuhan-canal.webp",
+    "order": 19
+  },
+  {
+    "id": "mohammad-murad-chamaa",
+    "name": "Mohammad Murad Chamaa",
+    "role_tr": "Danışman",
+    "role_en": "Advisor",
+    "photo": "assets/team/mohammad-murad-chamaa.webp",
+    "order": 20
+  },
+  {
+    "id": "yigit-unal",
+    "name": "Yiğit Ünal",
+    "role_tr": "Danışman",
+    "role_en": "Advisor",
+    "photo": "assets/team/yigit-unal.webp",
+    "order": 21
+  },
+  {
+    "id": "mehmet-ali-ozek",
+    "name": "Mehmet Ali Özek",
+    "role_tr": "Danışman",
+    "role_en": "Advisor",
+    "photo": "",
+    "order": 22
+  },
+  {
+    "id": "abdulhamid-uysal",
+    "name": "Abdülhamid Uysal",
+    "role_tr": "Danışman",
+    "role_en": "Advisor",
+    "photo": "",
+    "order": 23
   }
 ]

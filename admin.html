@@ -368,19 +368,34 @@
                                         class="block w-full rounded-lg border border-border-dark bg-background-dark py-2.5 px-3 text-white placeholder:text-text-muted/50 focus:border-primary focus:ring-1 focus:ring-primary text-sm"
                                         placeholder="E.g. President, Coordinator..." />
                                 </div>
+                                <!-- LinkedIn (optional) -->
+                                <div>
+                                    <label class="block text-xs font-medium text-text-muted mb-1"
+                                        data-i18n="admin.memberLinkedIn">LinkedIn Profili (isteğe bağlı)</label>
+                                    <input name="linkedin" type="text" inputmode="url" autocomplete="url"
+                                        class="block w-full rounded-lg border border-border-dark bg-background-dark py-2.5 px-3 text-white placeholder:text-text-muted/50 focus:border-primary focus:ring-1 focus:ring-primary text-sm"
+                                        placeholder="https://www.linkedin.com/in/kullanici" />
+                                    <p class="mt-1.5 text-[11px] text-text-muted" data-i18n="admin.memberLinkedInHint">
+                                        Boş bırakırsanız kişinin kartında LinkedIn butonu gösterilmez.</p>
+                                </div>
                                 <!-- Photo Upload -->
                                 <div>
                                     <label class="block text-xs font-medium text-text-muted mb-2"
                                         data-i18n="admin.memberPhoto">Fotoğraf</label>
-                                    <div id="member-photo-drop" class="drop-zone rounded-lg p-6 text-center">
+                                    <div id="member-photo-drop" role="button" tabindex="0"
+                                        class="drop-zone rounded-lg p-6 text-center focus:outline-none focus:ring-2 focus:ring-primary">
                                         <span
                                             class="material-symbols-outlined text-text-muted text-[32px] mb-1 block">add_a_photo</span>
-                                        <p class="text-xs text-text-muted" data-i18n="admin.eventImageDrop">Görseli
-                                            buraya sürükleyin veya tıklayın</p>
+                                        <p class="text-xs text-text-muted" data-i18n="admin.memberPhotoDrop">Fotoğraf seçin
+                                            veya buraya sürükleyin</p>
                                     </div>
+                                    <input id="member-photo-file" type="file" accept="image/jpeg,image/png,image/webp"
+                                        class="sr-only" />
                                     <img id="member-photo-preview"
                                         class="hidden mt-2 w-20 h-20 mx-auto object-cover rounded-full border-2 border-primary/30"
                                         alt="Preview" />
+                                    <p id="member-photo-status" class="mt-2 text-center text-xs text-text-muted"
+                                        data-i18n="admin.memberPhotoHint">JPG, PNG veya WebP · Kırpıldıktan sonra WebP olarak yayınlanır</p>
                                 </div>
                                 <!-- Submit -->
                                 <div class="flex gap-2">
@@ -553,6 +568,53 @@
             </div>
         </div>
     </main>
+
+    <div id="member-crop-modal" class="fixed inset-0 z-[100] hidden items-start justify-center overflow-y-auto bg-black/80 p-4"
+        role="dialog" aria-modal="true" aria-labelledby="member-crop-title">
+        <div class="my-auto w-full max-w-xl rounded-xl border border-border-dark bg-card-dark shadow-2xl">
+            <div class="flex items-center justify-between border-b border-border-dark px-5 py-4">
+                <div>
+                    <h2 id="member-crop-title" class="font-bold text-white" data-i18n="admin.cropPhoto">Fotoğrafı Kırp</h2>
+                    <p class="mt-1 text-xs text-text-muted" data-i18n="admin.cropPhotoHint">Yüzü kare alanın içine yerleştirin.</p>
+                </div>
+                <button id="member-crop-close" type="button"
+                    class="rounded-lg p-2 text-text-muted transition-colors hover:bg-white/5 hover:text-white focus:outline-none focus:ring-2 focus:ring-primary"
+                    data-i18n-aria-label="admin.cancel" aria-label="İptal">
+                    <span class="material-symbols-outlined block text-[20px]" aria-hidden="true">close</span>
+                </button>
+            </div>
+            <div class="space-y-5 p-5">
+                <div class="mx-auto aspect-square w-full max-w-[420px] overflow-hidden rounded-lg border border-primary/30 bg-background-dark">
+                    <canvas id="member-crop-canvas" width="720" height="720" class="block h-full w-full"></canvas>
+                </div>
+                <div class="grid gap-4 sm:grid-cols-3">
+                    <label class="text-xs font-medium text-text-muted">
+                        <span data-i18n="admin.cropZoom">Yakınlık</span>
+                        <input id="member-crop-zoom" type="range" min="1" max="3" step="0.01" value="1"
+                            class="mt-2 w-full accent-primary" />
+                    </label>
+                    <label class="text-xs font-medium text-text-muted">
+                        <span data-i18n="admin.cropHorizontal">Yatay</span>
+                        <input id="member-crop-x" type="range" min="-100" max="100" step="1" value="0"
+                            class="mt-2 w-full accent-primary" />
+                    </label>
+                    <label class="text-xs font-medium text-text-muted">
+                        <span data-i18n="admin.cropVertical">Dikey</span>
+                        <input id="member-crop-y" type="range" min="-100" max="100" step="1" value="0"
+                            class="mt-2 w-full accent-primary" />
+                    </label>
+                </div>
+                <div class="flex justify-end gap-2 border-t border-border-dark pt-4">
+                    <button id="member-crop-cancel" type="button"
+                        class="rounded-lg border border-border-dark px-4 py-2.5 text-sm font-medium text-text-muted transition-colors hover:text-white"
+                        data-i18n="admin.cancel">İptal</button>
+                    <button id="member-crop-apply" type="button"
+                        class="rounded-lg bg-primary px-5 py-2.5 text-sm font-bold text-background-dark transition-colors hover:bg-orange-400 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-card-dark"
+                        data-i18n="admin.applyCrop">Kırpmayı Uygula</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div id="footer-placeholder"></div>
 

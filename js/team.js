@@ -146,6 +146,25 @@ function getMemberRole(member) {
     return currentLang === 'tr' ? (member.role_tr || member.role_en || '') : (member.role_en || member.role_tr || '');
 }
 
+function normalizeLinkedInUrl(value) {
+    const trimmed = String(value || '').trim();
+    if (!trimmed) return '';
+
+    const candidate = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+    try {
+        const url = new URL(candidate);
+        const hostname = url.hostname.toLowerCase();
+        if (hostname !== 'linkedin.com' && !hostname.endsWith('.linkedin.com')) return '';
+        url.protocol = 'https:';
+        url.username = '';
+        url.password = '';
+        url.port = '';
+        return url.href;
+    } catch {
+        return '';
+    }
+}
+
 /**
  * Render team members on the About page
  */
@@ -166,9 +185,13 @@ async function renderTeamMembers() {
     }
 
     container.innerHTML = members.map((member, index) => {
-        const safeName = escapeHTML(getMemberName(member));
+        const memberName = getMemberName(member);
+        const safeName = escapeHTML(memberName);
         const safePhoto = escapeHTML(member.photo);
         const safeRole = escapeHTML(getMemberRole(member));
+        const linkedInUrl = normalizeLinkedInUrl(member.linkedin);
+        const safeLinkedInUrl = escapeHTML(linkedInUrl);
+        const safeLinkedInLabel = escapeHTML(`${t('about.openLinkedIn')} — ${memberName}`);
 
         return `
         <article class="hud-panel card-hover group p-5">
@@ -186,10 +209,18 @@ async function renderTeamMembers() {
                            <span class="material-symbols-outlined text-[28px] text-primary">person</span>
                        </div>`
                 }
-                <div class="min-w-0 text-left">
+                <div class="min-w-0 flex-1 text-left">
                     <h3 class="truncate text-base font-bold text-white transition-colors group-hover:text-primary">${safeName}</h3>
                     <p class="mt-1 text-sm font-medium text-text-muted">${safeRole}</p>
                 </div>
+                ${linkedInUrl ? `
+                    <a href="${safeLinkedInUrl}" target="_blank" rel="noopener noreferrer"
+                        class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[#0a66c2]/50 bg-[#0a66c2]/10 text-[#70b5f9] transition-colors hover:border-[#70b5f9] hover:bg-[#0a66c2]/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-[#70b5f9] focus:ring-offset-2 focus:ring-offset-card-dark"
+                        aria-label="${safeLinkedInLabel}" title="LinkedIn">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" class="h-[18px] w-[18px] fill-current">
+                            <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V8.98h3.42v1.57h.05c.47-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.29ZM5.32 7.41a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12Zm1.78 13.04H3.54V8.98H7.1v11.47ZM22.23 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.46c.98 0 1.77-.77 1.77-1.73V1.73C24 .77 23.21 0 22.23 0Z"/>
+                        </svg>
+                    </a>` : ''}
             </div>
         </article>`;
     }).join('');

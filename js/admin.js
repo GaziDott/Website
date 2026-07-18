@@ -10,8 +10,11 @@ const ADMIN_SESSION_KEY = 'dott-admin-session-v2';
 const ADMIN_PASSWORD_HASH = 'fdd82c3a8023fb399d912de0c27d1d62c949bb3d3ead505af9a9a15c88c08910';
 const ADMIN_DIRTY_KEY = 'dott-admin-unsynced-changes';
 const EVENT_IMAGE_DELETION_KEY = 'dott-pending-event-image-deletions';
+const TEAM_IMAGE_DELETION_KEY = 'dott-pending-team-image-deletions';
 const EVENT_IMAGE_MAX_SOURCE_BYTES = 12 * 1024 * 1024;
 const EVENT_IMAGE_TARGET_BYTES = 700 * 1024;
+const TEAM_IMAGE_MAX_SOURCE_BYTES = 12 * 1024 * 1024;
+const TEAM_IMAGE_SIZE = 720;
 
 // Currently editing event/member/category
 let editingEventId = null;
@@ -21,6 +24,10 @@ let editingCategoryId = null;
 let currentEventImage = '';
 let currentMemberPhoto = '';
 let isEventImageProcessing = false;
+let isMemberPhotoProcessing = false;
+let memberCropImage = null;
+let memberCropCleanup = null;
+let memberCropPreviousFocus = null;
 // Current selected color for category
 let currentCategoryColor = 'blue';
 
@@ -122,6 +129,24 @@ function queueEventImageDeletion(path) {
     if (!queued.includes(path)) {
         queued.push(path);
         localStorage.setItem(EVENT_IMAGE_DELETION_KEY, JSON.stringify(queued));
+    }
+}
+
+function isManagedTeamPhotoPath(path) {
+    return typeof path === 'string' && /^assets\/team\/[a-zA-Z0-9._/-]+\.webp$/.test(path);
+}
+
+function queueTeamPhotoDeletion(path) {
+    if (!isManagedTeamPhotoPath(path)) return;
+    let queued = [];
+    try {
+        queued = JSON.parse(localStorage.getItem(TEAM_IMAGE_DELETION_KEY) || '[]');
+    } catch {
+        queued = [];
+    }
+    if (!queued.includes(path)) {
+        queued.push(path);
+        localStorage.setItem(TEAM_IMAGE_DELETION_KEY, JSON.stringify(queued));
     }
 }
 
@@ -424,85 +449,200 @@ function setupEventImageUpload() {
     });
 }
 
-/**
- * Setup drag-and-drop image upload zone
- */
-function setupImageUpload(dropZoneId, previewId, onImageSet) {
-    const dropZone = document.getElementById(dropZoneId);
-    const preview = document.getElementById(previewId);
-    if (!dropZone) return;
-
-    // Drag events
-    ['dragenter', 'dragover'].forEach(eventName => {
-        dropZone.addEventListener(eventName, (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            dropZone.classList.add('border-primary', 'bg-primary/5');
-        });
-    });
-
-    ['dragleave', 'drop'].forEach(eventName => {
-        dropZone.addEventListener(eventName, (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            dropZone.classList.remove('border-primary', 'bg-primary/5');
-        });
-    });
-
-    // Drop
-    dropZone.addEventListener('drop', async (e) => {
-        const files = e.dataTransfer.files;
-        if (files.length > 0 && files[0].type.startsWith('image/')) {
-            await handleImageFile(files[0], preview, onImageSet);
-        }
-    });
-
-    // Click to select
-    dropZone.addEventListener('click', () => {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        input.onchange = async (e) => {
-            if (e.target.files.length > 0) {
-                await handleImageFile(e.target.files[0], preview, onImageSet);
-            }
-        };
-        input.click();
-    });
+function setMemberPhotoStatus(key = 'admin.memberPhotoHint', tone = 'muted') {
+    const status = document.getElementById('member-photo-status');
+    if (!status) return;
+    status.dataset.i18n = key;
+    status.textContent = t(key);
+    status.classList.remove('text-text-muted', 'text-primary', 'text-green-400', 'text-red-400');
+    const toneClasses = {
+        muted: 'text-text-muted',
+        pending: 'text-primary',
+        ready: 'text-green-400',
+        error: 'text-red-400'
+    };
+    status.classList.add(toneClasses[tone] || toneClasses.muted);
 }
 
-/**
- * Handle an image file and show preview
- */
-async function handleImageFile(file, previewEl, onImageSet) {
-    // Reject oversized files (2MB max in static mode)
-    if (file.size > 2 * 1024 * 1024) {
-        showToast(t('admin.imageSizeWarning'), 'error');
+function showMemberPhotoPreview(src) {
+    const preview = document.getElementById('member-photo-preview');
+    if (!preview) return;
+    if (!src) {
+        preview.removeAttribute('src');
+        preview.classList.add('hidden');
+        return;
+    }
+    preview.src = src;
+    preview.classList.remove('hidden');
+}
+
+function drawMemberCrop() {
+    const canvas = document.getElementById('member-crop-canvas');
+    if (!canvas || !memberCropImage) return;
+    const context = canvas.getContext('2d', { alpha: false });
+    if (!context) return;
+
+    const zoom = Number(document.getElementById('member-crop-zoom')?.value || 1);
+    const panX = Number(document.getElementById('member-crop-x')?.value || 0) / 100;
+    const panY = Number(document.getElementById('member-crop-y')?.value || 0) / 100;
+    const baseScale = Math.max(canvas.width / memberCropImage.width, canvas.height / memberCropImage.height);
+    const drawWidth = memberCropImage.width * baseScale * zoom;
+    const drawHeight = memberCropImage.height * baseScale * zoom;
+    const overflowX = Math.max(0, drawWidth - canvas.width);
+    const overflowY = Math.max(0, drawHeight - canvas.height);
+    const drawX = -(overflowX / 2) + (panX * overflowX / 2);
+    const drawY = -(overflowY / 2) + (panY * overflowY / 2);
+
+    context.fillStyle = '#17100b';
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.imageSmoothingEnabled = true;
+    context.imageSmoothingQuality = 'high';
+    context.drawImage(memberCropImage.source, drawX, drawY, drawWidth, drawHeight);
+}
+
+function closeMemberCrop() {
+    const modal = document.getElementById('member-crop-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+    if (memberCropCleanup) memberCropCleanup();
+    memberCropImage = null;
+    memberCropCleanup = null;
+    isMemberPhotoProcessing = false;
+    document.body.style.overflow = '';
+    const fileInput = document.getElementById('member-photo-file');
+    if (fileInput) fileInput.value = '';
+    if (memberCropPreviousFocus instanceof HTMLElement) memberCropPreviousFocus.focus();
+    memberCropPreviousFocus = null;
+}
+
+async function startMemberPhotoCrop(file) {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!file || !allowedTypes.includes(file.type)) {
+        showToast(t('admin.imageUnsupported'), 'error');
+        return;
+    }
+    if (file.size > TEAM_IMAGE_MAX_SOURCE_BYTES) {
+        showToast(t('admin.imageTooLarge'), 'error');
         return;
     }
 
+    isMemberPhotoProcessing = true;
+    setMemberPhotoStatus('admin.memberPhotoProcessing', 'pending');
     try {
-        // Show uploading state
-        if (previewEl) {
-            previewEl.classList.remove('hidden');
-            previewEl.style.opacity = '0.5';
-        }
+        const loaded = await loadImageSource(file);
+        if (memberCropCleanup) memberCropCleanup();
+        memberCropImage = loaded;
+        memberCropCleanup = loaded.cleanup;
+        ['member-crop-zoom', 'member-crop-x', 'member-crop-y'].forEach(id => {
+            const input = document.getElementById(id);
+            if (input) input.value = id === 'member-crop-zoom' ? '1' : '0';
+        });
+        drawMemberCrop();
 
-        // Convert to storable data URI
-        const url = await uploadImageFile(file);
-
-        if (previewEl) {
-            previewEl.src = url;
-            previewEl.style.opacity = '1';
+        const modal = document.getElementById('member-crop-modal');
+        memberCropPreviousFocus = document.activeElement;
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
         }
-        if (onImageSet) onImageSet(url);
-    } catch (err) {
-        showToast(err.message || 'Image upload failed', 'error');
-        if (previewEl) {
-            previewEl.classList.add('hidden');
-            previewEl.style.opacity = '1';
-        }
+        document.body.style.overflow = 'hidden';
+        document.getElementById('member-crop-apply')?.focus();
+    } catch (error) {
+        console.error(error);
+        isMemberPhotoProcessing = false;
+        setMemberPhotoStatus('admin.memberPhotoHint', 'error');
+        showToast(t('admin.imageOptimizeFailed'), 'error');
     }
+}
+
+async function applyMemberCrop() {
+    const canvas = document.getElementById('member-crop-canvas');
+    if (!canvas || !memberCropImage) return;
+
+    isMemberPhotoProcessing = true;
+    const applyButton = document.getElementById('member-crop-apply');
+    if (applyButton) applyButton.disabled = true;
+    try {
+        drawMemberCrop();
+        const webp = await canvasToBlob(canvas, 'image/webp', 0.86);
+        currentMemberPhoto = await uploadImageFile(webp);
+        showMemberPhotoPreview(currentMemberPhoto);
+        setMemberPhotoStatus('admin.memberPhotoReady', 'ready');
+        closeMemberCrop();
+    } catch (error) {
+        console.error(error);
+        showToast(t('admin.imageOptimizeFailed'), 'error');
+    } finally {
+        isMemberPhotoProcessing = false;
+        if (applyButton) applyButton.disabled = false;
+    }
+}
+
+function setupMemberPhotoUpload() {
+    const dropZone = document.getElementById('member-photo-drop');
+    const fileInput = document.getElementById('member-photo-file');
+    const modal = document.getElementById('member-crop-modal');
+    if (!dropZone || !fileInput || !modal) return;
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, event => {
+            event.preventDefault();
+            dropZone.classList.add('border-primary', 'bg-primary/5');
+        });
+    });
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, event => {
+            event.preventDefault();
+            dropZone.classList.remove('border-primary', 'bg-primary/5');
+        });
+    });
+    dropZone.addEventListener('drop', event => {
+        const file = event.dataTransfer?.files?.[0];
+        if (file) startMemberPhotoCrop(file);
+    });
+    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            fileInput.click();
+        }
+    });
+    fileInput.addEventListener('change', event => {
+        const file = event.target.files?.[0];
+        if (file) startMemberPhotoCrop(file);
+    });
+
+    ['member-crop-zoom', 'member-crop-x', 'member-crop-y'].forEach(id => {
+        document.getElementById(id)?.addEventListener('input', drawMemberCrop);
+    });
+    document.getElementById('member-crop-apply')?.addEventListener('click', applyMemberCrop);
+    document.getElementById('member-crop-cancel')?.addEventListener('click', closeMemberCrop);
+    document.getElementById('member-crop-close')?.addEventListener('click', closeMemberCrop);
+    modal.addEventListener('click', event => {
+        if (event.target === modal) closeMemberCrop();
+    });
+    document.addEventListener('keydown', event => {
+        if (modal.classList.contains('hidden')) return;
+        if (event.key === 'Escape') {
+            closeMemberCrop();
+            return;
+        }
+        if (event.key !== 'Tab') return;
+
+        const focusable = Array.from(modal.querySelectorAll('button:not([disabled]), input:not([disabled])'));
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+        }
+    });
 }
 
 /**
@@ -704,6 +844,8 @@ async function renderAdminTeam() {
         const safePhoto = escapeHTML(member.photo);
         const safeRole = escapeHTML(getMemberRole(member));
         const safeId = escapeHTML(member.id);
+        const linkedInUrl = normalizeLinkedInUrl(member.linkedin);
+        const safeLinkedInUrl = escapeHTML(linkedInUrl);
 
         return `
         <div class="bg-card-dark border border-border-dark rounded-xl p-4 hover:border-border-dark/80 transition-all">
@@ -714,7 +856,14 @@ async function renderAdminTeam() {
             }
             <div class="flex-1 min-w-0">
                 <h4 class="font-bold text-white truncate text-sm">${safeName}</h4>
-                <p class="text-xs text-primary">${safeRole}</p>
+                <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+                    <p class="text-xs text-primary">${safeRole}</p>
+                    ${linkedInUrl ? `<a href="${safeLinkedInUrl}" target="_blank" rel="noopener noreferrer"
+                        class="inline-flex items-center gap-1 text-[11px] text-[#70b5f9] hover:text-white focus:outline-none focus:ring-2 focus:ring-[#70b5f9] rounded"
+                        aria-label="${t('about.openLinkedIn')}">
+                        <span>LinkedIn</span><span class="material-symbols-outlined text-[12px]" aria-hidden="true">open_in_new</span>
+                    </a>` : ''}
+                </div>
             </div>
             <div class="hidden sm:flex items-center gap-1 flex-shrink-0">
                 <button onclick="handleMoveTeamMember('${safeId}', 'up')"
@@ -1093,13 +1242,14 @@ async function handleEditMember(id) {
     form.member_name.value = member.name || '';
     form.role_tr.value = member.role_tr || '';
     form.role_en.value = member.role_en || '';
+    form.linkedin.value = member.linkedin || '';
 
     currentMemberPhoto = member.photo || '';
-    const preview = document.getElementById('member-photo-preview');
-    if (preview && currentMemberPhoto) {
-        preview.src = currentMemberPhoto;
-        preview.classList.remove('hidden');
-    }
+    showMemberPhotoPreview(currentMemberPhoto);
+    setMemberPhotoStatus(
+        currentMemberPhoto.startsWith('data:image/') ? 'admin.memberPhotoReady' : 'admin.memberPhotoHint',
+        currentMemberPhoto.startsWith('data:image/') ? 'ready' : 'muted'
+    );
 
     const formTitle = document.getElementById('team-form-title');
     const submitBtn = document.getElementById('team-submit-btn');
@@ -1117,8 +1267,8 @@ function handleCancelMemberEdit() {
     const form = document.getElementById('team-form');
     if (form) form.reset();
 
-    const preview = document.getElementById('member-photo-preview');
-    if (preview) preview.classList.add('hidden');
+    showMemberPhotoPreview('');
+    setMemberPhotoStatus();
 
     const formTitle = document.getElementById('team-form-title');
     const submitBtn = document.getElementById('team-submit-btn');
@@ -1130,6 +1280,9 @@ function handleCancelMemberEdit() {
 
 async function handleDeleteMember(id) {
     if (confirm(currentLang === 'tr' ? 'Bu üyeyi silmek istediğinize emin misiniz?' : 'Are you sure you want to delete this member?')) {
+        const members = await getTeamMembers();
+        const member = members.find(item => item.id === id);
+        if (member?.photo) queueTeamPhotoDeletion(member.photo);
         await deleteTeamMember(id);
         markUnsyncedChanges();
         await renderAdminTeam();
@@ -1148,10 +1301,24 @@ async function handleTeamFormSubmit(e) {
     e.preventDefault();
     const form = e.target;
 
+    if (isMemberPhotoProcessing) {
+        showToast(t('admin.imageStillProcessing'), 'info');
+        return;
+    }
+
+    const linkedInInput = form.linkedin.value.trim();
+    const linkedInUrl = normalizeLinkedInUrl(linkedInInput);
+    if (linkedInInput && !linkedInUrl) {
+        showToast(t('admin.memberLinkedInInvalid'), 'error');
+        form.linkedin.focus();
+        return;
+    }
+
     const memberData = {
         name: form.member_name.value.trim(),
         role_tr: form.role_tr.value.trim(),
         role_en: form.role_en.value.trim(),
+        linkedin: linkedInUrl,
         photo: currentMemberPhoto,
     };
 
@@ -1162,6 +1329,11 @@ async function handleTeamFormSubmit(e) {
 
     try {
         if (editingMemberId) {
+            const members = await getTeamMembers();
+            const previousMember = members.find(member => member.id === editingMemberId);
+            if (previousMember?.photo && previousMember.photo !== memberData.photo) {
+                queueTeamPhotoDeletion(previousMember.photo);
+            }
             await updateTeamMember(editingMemberId, memberData);
             markUnsyncedChanges();
             showToast(t('admin.memberUpdated'), 'success');
@@ -1174,8 +1346,8 @@ async function handleTeamFormSubmit(e) {
 
         form.reset();
         currentMemberPhoto = '';
-        const preview = document.getElementById('member-photo-preview');
-        if (preview) preview.classList.add('hidden');
+        showMemberPhotoPreview('');
+        setMemberPhotoStatus();
         await renderAdminTeam();
     } catch (err) {
         showToast(currentLang === 'tr' ? 'İşlem başarısız oldu.' : 'Operation failed.', 'error');
@@ -1504,15 +1676,18 @@ async function handleGitHubSync() {
         ]);
 
         const preparedEvents = await prepareEventImagesForGitHub(events, token);
+        const preparedTeam = await prepareTeamPhotosForGitHub(team, token);
 
         await pushFileToGitHub('data/events.json', JSON.stringify(preparedEvents, null, 2), token);
-        await pushFileToGitHub('data/team.json', JSON.stringify(team, null, 2), token);
+        await pushFileToGitHub('data/team.json', JSON.stringify(preparedTeam, null, 2), token);
         await pushFileToGitHub('data/categories.json', JSON.stringify(categories, null, 2), token);
 
         setEventsData(preparedEvents);
+        setTeamMembersData(preparedTeam);
         await processPendingEventImageDeletions(token, preparedEvents);
+        await processPendingTeamPhotoDeletions(token, preparedTeam);
         clearUnsyncedChanges();
-        await renderAdminEvents();
+        await Promise.all([renderAdminEvents(), renderAdminTeam()]);
 
         showToast(currentLang === 'tr' ? 'GitHub ile başarıyla senkronize edildi!' : 'Successfully synced with GitHub!', 'success');
     } catch (err) {
@@ -1561,6 +1736,7 @@ async function handleGitHubPull() {
         if (teamData) setTeamMembersData(teamData);
         if (catData) setCategoriesData(catData);
         localStorage.removeItem(EVENT_IMAGE_DELETION_KEY);
+        localStorage.removeItem(TEAM_IMAGE_DELETION_KEY);
         clearUnsyncedChanges();
 
         await Promise.all([
@@ -1686,6 +1862,63 @@ async function prepareEventImagesForGitHub(events, token) {
     return prepared;
 }
 
+async function convertTeamPhotoToWebpBytes(dataUrl) {
+    const { mimeType, bytes } = parseImageDataUrl(dataUrl);
+    if (mimeType === 'image/webp') return bytes;
+
+    const loaded = await loadImageSource(new Blob([bytes], { type: mimeType }));
+    const canvas = document.createElement('canvas');
+    canvas.width = TEAM_IMAGE_SIZE;
+    canvas.height = TEAM_IMAGE_SIZE;
+    const context = canvas.getContext('2d', { alpha: false });
+    if (!context) {
+        loaded.cleanup();
+        throw new Error('Canvas is not supported');
+    }
+
+    try {
+        const scale = Math.max(TEAM_IMAGE_SIZE / loaded.width, TEAM_IMAGE_SIZE / loaded.height);
+        const width = loaded.width * scale;
+        const height = loaded.height * scale;
+        context.fillStyle = '#17100b';
+        context.fillRect(0, 0, TEAM_IMAGE_SIZE, TEAM_IMAGE_SIZE);
+        context.imageSmoothingEnabled = true;
+        context.imageSmoothingQuality = 'high';
+        context.drawImage(loaded.source, (TEAM_IMAGE_SIZE - width) / 2, (TEAM_IMAGE_SIZE - height) / 2, width, height);
+        const webp = await canvasToBlob(canvas, 'image/webp', 0.86);
+        return new Uint8Array(await webp.arrayBuffer());
+    } finally {
+        loaded.cleanup();
+    }
+}
+
+async function prepareTeamPhotosForGitHub(team, token) {
+    const prepared = team.map(member => ({ ...member }));
+    const pending = prepared.filter(member => typeof member.photo === 'string' && member.photo.startsWith('data:image/'));
+
+    for (let index = 0; index < pending.length; index += 1) {
+        const member = pending[index];
+        const message = t('admin.uploadingImages')
+            .replace('{current}', String(index + 1))
+            .replace('{total}', String(pending.length));
+        showToast(message, 'info');
+
+        const bytes = await convertTeamPhotoToWebpBytes(member.photo);
+        const hash = (await hashBytes(bytes)).slice(0, 12);
+        const safeMemberId = String(member.id || `member-${index + 1}`)
+            .toLowerCase()
+            .replace(/[^a-z0-9_-]+/g, '-')
+            .replace(/^-+|-+$/g, '')
+            .slice(0, 64) || `member-${index + 1}`;
+        const path = `assets/team/${safeMemberId}-${hash}.webp`;
+
+        await pushBytesToGitHub(path, bytes, token, `Admin Panel: Add team photo ${safeMemberId}`);
+        member.photo = path;
+    }
+
+    return prepared;
+}
+
 async function deleteFileFromGitHub(path, token) {
     const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`;
     const sha = await fetchFileSHA(url, token);
@@ -1698,7 +1931,7 @@ async function deleteFileFromGitHub(path, token) {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            message: `Admin Panel: Remove unused event image ${path}`,
+            message: `Admin Panel: Remove unused image ${path}`,
             sha,
             branch: GITHUB_BRANCH
         })
@@ -1732,6 +1965,31 @@ async function processPendingEventImageDeletions(token, events) {
 
     if (failed.length > 0) localStorage.setItem(EVENT_IMAGE_DELETION_KEY, JSON.stringify(failed));
     else localStorage.removeItem(EVENT_IMAGE_DELETION_KEY);
+}
+
+async function processPendingTeamPhotoDeletions(token, team) {
+    let queued = [];
+    try {
+        queued = JSON.parse(localStorage.getItem(TEAM_IMAGE_DELETION_KEY) || '[]');
+    } catch {
+        queued = [];
+    }
+    if (!Array.isArray(queued) || queued.length === 0) return;
+
+    const referenced = new Set(team.map(member => member.photo).filter(isManagedTeamPhotoPath));
+    const failed = [];
+    for (const path of queued) {
+        if (referenced.has(path)) continue;
+        try {
+            await deleteFileFromGitHub(path, token);
+        } catch (error) {
+            console.warn(`Could not remove unused team photo ${path}`, error);
+            failed.push(path);
+        }
+    }
+
+    if (failed.length > 0) localStorage.setItem(TEAM_IMAGE_DELETION_KEY, JSON.stringify(failed));
+    else localStorage.removeItem(TEAM_IMAGE_DELETION_KEY);
 }
 
 async function pushFileToGitHub(path, content, token, _isRetry = false) {
@@ -1893,10 +2151,8 @@ function setupAdminForms() {
         currentEventImage = url;
     });
 
-    // Photo upload for team
-    setupImageUpload('member-photo-drop', 'member-photo-preview', (img) => {
-        currentMemberPhoto = img;
-    });
+    // Photo upload + square crop for team
+    setupMemberPhotoUpload();
 
     // Category cards (event form)
     document.querySelectorAll('.category-card').forEach(card => {
