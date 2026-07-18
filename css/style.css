@@ -291,6 +291,311 @@ body::before {
     box-shadow: 0 0 0 4px rgba(244, 140, 37, 0.12);
 }
 
+.wrapped-section {
+    position: relative;
+    overflow: hidden;
+    padding-block: clamp(4rem, 8vw, 6.5rem);
+    scroll-margin-top: 72px;
+    border-bottom: 1px solid var(--dott-border);
+    color: #241640;
+    background:
+        radial-gradient(circle at 12% 18%, rgba(195, 104, 119, 0.58) 0 18px, transparent 19px),
+        radial-gradient(circle at 82% 28%, rgba(255, 159, 207, 0.52) 0 30px, transparent 31px),
+        linear-gradient(116deg, #ff8b1f 0%, #f9a83b 46%, #ffd977 100%);
+}
+
+.wrapped-section::before {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    content: "";
+    opacity: 0.24;
+    background-image: radial-gradient(circle, #8c507e 0 7px, transparent 8px);
+    background-size: 82px 82px;
+    transform: rotate(-4deg) scale(1.08);
+}
+
+.wrapped-layout {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(230px, 0.68fr) minmax(0, 1.32fr);
+    align-items: center;
+    gap: clamp(2.5rem, 6vw, 5.5rem);
+}
+
+.wrapped-intro {
+    max-width: 420px;
+}
+
+.wrapped-kicker {
+    display: inline-block;
+    padding: 0.7rem 0.8rem;
+    color: #ffd977;
+    background: #241640;
+    box-shadow: 5px 5px 0 #ff9fcf;
+    font-family: "Press Start 2P", monospace;
+    font-size: clamp(0.5rem, 1.1vw, 0.65rem);
+    line-height: 1.6;
+    text-transform: uppercase;
+}
+
+.wrapped-heading {
+    max-width: 470px;
+    margin-top: 1.7rem;
+    color: #241640;
+    font-size: clamp(2.45rem, 5vw, 4.8rem);
+    font-weight: 800;
+    line-height: 0.94;
+    letter-spacing: -0.055em;
+    text-wrap: balance;
+    text-shadow: 4px 4px 0 rgba(255, 159, 207, 0.78);
+}
+
+.wrapped-heading span {
+    display: block;
+}
+
+.wrapped-year {
+    white-space: nowrap;
+}
+
+.wrapped-description {
+    max-width: 390px;
+    margin-top: 1.4rem;
+    color: rgba(36, 22, 64, 0.82);
+    font-size: 1rem;
+    font-weight: 650;
+    line-height: 1.7;
+}
+
+.wrapped-hint {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    color: #241640;
+    font-family: "Press Start 2P", monospace;
+    font-size: 0.56rem;
+    line-height: 1.6;
+    text-transform: uppercase;
+}
+
+.wrapped-hint-icon {
+    display: grid;
+    width: 30px;
+    height: 24px;
+    flex: 0 0 auto;
+    place-items: center;
+    border: 2px solid currentColor;
+    font-family: monospace;
+    font-size: 1rem;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.wrapped-window {
+    min-width: 0;
+    overflow: hidden;
+    border: 3px solid #24155f;
+    background: #ffb6d9;
+    box-shadow: 12px 12px 0 rgba(35, 26, 16, 0.94);
+}
+
+.wrapped-window-bar {
+    display: grid;
+    min-height: 52px;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 6px 8px 6px 14px;
+    border-bottom: 3px solid #24155f;
+    background: #ff9fcf;
+}
+
+.wrapped-window-icons {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: #24155f;
+}
+
+.wrapped-window-icon {
+    position: relative;
+    display: block;
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+}
+
+.wrapped-window-close::before,
+.wrapped-window-close::after {
+    position: absolute;
+    top: 8px;
+    left: 2px;
+    width: 14px;
+    height: 2px;
+    content: "";
+    background: currentColor;
+}
+
+.wrapped-window-close::before {
+    transform: rotate(45deg);
+}
+
+.wrapped-window-close::after {
+    transform: rotate(-45deg);
+}
+
+.wrapped-window-maximize::before {
+    position: absolute;
+    inset: 2px;
+    border: 2px solid currentColor;
+    content: "";
+}
+
+.wrapped-window-minimize::before {
+    position: absolute;
+    right: 2px;
+    bottom: 3px;
+    left: 2px;
+    height: 2px;
+    content: "";
+    background: currentColor;
+}
+
+.wrapped-window-title {
+    overflow: hidden;
+    color: #24155f;
+    font-family: "Press Start 2P", monospace;
+    font-size: 0.52rem;
+    line-height: 1.4;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.wrapped-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.wrapped-control {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    place-items: center;
+    border: 2px solid #24155f;
+    color: #24155f;
+    background: #fff7df;
+    font-size: 1.15rem;
+    font-weight: 900;
+    transition: color 140ms ease, background-color 140ms ease, transform 140ms ease;
+}
+
+.wrapped-control:hover:not(:disabled) {
+    color: #fff7df;
+    background: #24155f;
+    transform: translateY(-2px);
+}
+
+.wrapped-control:disabled {
+    cursor: not-allowed;
+    opacity: 0.38;
+}
+
+.wrapped-counter {
+    min-width: 74px;
+    color: #24155f;
+    font-family: "Press Start 2P", monospace;
+    font-size: 0.52rem;
+    text-align: center;
+}
+
+.wrapped-carousel {
+    position: relative;
+    display: flex;
+    gap: 18px;
+    margin: 0;
+    padding: 18px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    list-style: none;
+    background: #241640;
+    scroll-behavior: smooth;
+    scroll-padding-inline: 18px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+}
+
+.wrapped-carousel::-webkit-scrollbar {
+    display: none;
+}
+
+.wrapped-carousel:focus-visible {
+    outline: 3px solid #ffd977;
+    outline-offset: -7px;
+}
+
+.wrapped-slide {
+    flex: 0 0 clamp(280px, 31vw, 405px);
+    overflow: hidden;
+    border: 2px solid #ff9fcf;
+    background: #ffd977;
+    box-shadow: 6px 6px 0 rgba(255, 159, 207, 0.48);
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+}
+
+.wrapped-slide img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: contain;
+}
+
+.wrapped-progress {
+    display: grid;
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+    gap: 5px;
+    padding: 6px 18px;
+    border-top: 3px solid #24155f;
+    background: #ff9fcf;
+}
+
+.wrapped-progress button {
+    position: relative;
+    height: 18px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+}
+
+.wrapped-progress button::before {
+    position: absolute;
+    inset: 6px 0;
+    content: "";
+    background: rgba(36, 21, 95, 0.3);
+    transition: background-color 140ms ease, transform 140ms ease;
+}
+
+.wrapped-progress button:hover::before,
+.wrapped-progress button.is-active::before {
+    background: #24155f;
+}
+
+.wrapped-progress button.is-active::before {
+    transform: scaleY(1.55);
+}
+
+.wrapped-progress button:focus-visible {
+    outline: 2px solid #24155f;
+    outline-offset: 1px;
+}
+
 .metric-strip {
     display: grid;
     max-width: 720px;
@@ -912,6 +1217,60 @@ body.event-detail-open {
 }
 
 @media (max-width: 640px) {
+    .wrapped-section {
+        padding-block: 3.75rem 4.5rem;
+    }
+
+    .wrapped-layout {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 2.25rem;
+    }
+
+    .wrapped-heading {
+        max-width: 350px;
+        font-size: clamp(2.35rem, 13vw, 3.45rem);
+    }
+
+    .wrapped-window {
+        margin-right: 10px;
+        box-shadow: 9px 9px 0 rgba(35, 26, 16, 0.94);
+    }
+
+    .wrapped-window-bar {
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 0.5rem;
+        padding-left: 10px;
+    }
+
+    .wrapped-window-icons {
+        display: none;
+    }
+
+    .wrapped-window-title {
+        text-align: left;
+    }
+
+    .wrapped-counter {
+        min-width: 62px;
+        font-size: 0.46rem;
+    }
+
+    .wrapped-control {
+        width: 36px;
+        height: 36px;
+    }
+
+    .wrapped-carousel {
+        gap: 14px;
+        padding: 14px;
+        scroll-padding-inline: 14px;
+    }
+
+    .wrapped-slide {
+        flex-basis: min(76vw, 330px);
+        box-shadow: 4px 4px 0 rgba(255, 159, 207, 0.48);
+    }
+
     .hero-stage {
         min-height: calc(100svh - 120px);
     }

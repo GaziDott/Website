@@ -42,7 +42,7 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
         rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
         rel="stylesheet" />
@@ -87,20 +87,106 @@
                         <a href="about.html" class="command-button command-button-secondary w-full sm:w-auto"
                             data-i18n="home.hero.cta2">Hakkımızda</a>
                     </div>
+                </div>
+            </div>
+        </section>
 
-                    <div class="metric-strip animate-fade-in-up-delay-3" aria-label="Topluluk odakları">
-                        <div class="metric-item">
-                            <span class="metric-label" data-i18n="label.connect">01 / Bağlan</span>
-                            <span class="metric-value" data-i18n="home.reason.community">Topluluk</span>
+        <section class="wrapped-section" aria-labelledby="wrapped-title">
+            <div class="section-shell wrapped-layout">
+                <div class="wrapped-intro">
+                    <span class="wrapped-kicker" data-i18n="home.wrapped.kicker">2025–2026 Sezon Kaydı</span>
+                    <h2 id="wrapped-title" class="wrapped-heading">
+                        <span data-i18n="home.wrapped.name">Gazi DOTT Wrapped</span>
+                        <span class="wrapped-year">2025–2026</span>
+                    </h2>
+                    <p class="wrapped-description" data-i18n="home.wrapped.description">Atölyelerden game jam'lere, çizim masalarından teknik gezilere: birlikte ürettiğimiz sezonun 10 karesi.</p>
+                    <p class="wrapped-hint">
+                        <span class="wrapped-hint-icon" aria-hidden="true">↔</span>
+                        <span data-i18n="home.wrapped.hint">Kaydır veya oklarla ilerle</span>
+                    </p>
+                </div>
+
+                <div class="wrapped-window">
+                    <div class="wrapped-window-bar">
+                        <div class="wrapped-window-icons" aria-hidden="true">
+                            <span class="wrapped-window-icon wrapped-window-close"></span>
+                            <span class="wrapped-window-icon wrapped-window-maximize"></span>
+                            <span class="wrapped-window-icon wrapped-window-minimize"></span>
                         </div>
-                        <div class="metric-item">
-                            <span class="metric-label" data-i18n="label.learn">02 / Öğren</span>
-                            <span class="metric-value" data-i18n="home.reason.learn">Öğren</span>
+                        <span class="wrapped-window-title">wrapped_gallery.exe</span>
+                        <div class="wrapped-controls">
+                            <button id="wrapped-prev" class="wrapped-control" type="button"
+                                aria-controls="wrapped-carousel" aria-label="Önceki görsel"
+                                data-i18n-aria-label="home.wrapped.previous">
+                                <span aria-hidden="true">←</span>
+                            </button>
+                            <output id="wrapped-counter" class="wrapped-counter" aria-live="polite">01 / 10</output>
+                            <button id="wrapped-next" class="wrapped-control" type="button"
+                                aria-controls="wrapped-carousel" aria-label="Sonraki görsel"
+                                data-i18n-aria-label="home.wrapped.next">
+                                <span aria-hidden="true">→</span>
+                            </button>
                         </div>
-                        <div class="metric-item">
-                            <span class="metric-label" data-i18n="label.build">03 / Üret</span>
-                            <span class="metric-value" data-i18n="home.reason.create">Yarat</span>
-                        </div>
+                    </div>
+
+                    <ol id="wrapped-carousel" class="wrapped-carousel" tabindex="0" role="region"
+                        aria-roledescription="carousel"
+                        aria-label="Gazi DOTT 2025–2026 sezon özeti galerisi"
+                        data-i18n-aria-label="home.wrapped.galleryLabel">
+                        <li class="wrapped-slide" aria-label="1 / 10">
+                            <img src="assets/wrapped-2025-2026/1.webp" width="1080" height="1350" loading="lazy" decoding="async"
+                                alt="Gazi DOTT Wrapped 2025–2026 kapak görseli" />
+                        </li>
+                        <li class="wrapped-slide" aria-label="2 / 10">
+                            <img src="assets/wrapped-2025-2026/2.webp" width="1080" height="1350" loading="lazy" decoding="async"
+                                alt="Bir yılda 20'den fazla etkinlik düzenlendiğini anlatan Wrapped görseli" />
+                        </li>
+                        <li class="wrapped-slide" aria-label="3 / 10">
+                            <img src="assets/wrapped-2025-2026/3.webp" width="1080" height="1350" loading="lazy" decoding="async"
+                                alt="En yüksek katılımlı Rakun Jam etkinliğinin fotoğrafları" />
+                        </li>
+                        <li class="wrapped-slide" aria-label="4 / 10">
+                            <img src="assets/wrapped-2025-2026/4.webp" width="1080" height="1350" loading="lazy" decoding="async"
+                                alt="Tea and Talk etkinliklerinden topluluk fotoğrafları" />
+                        </li>
+                        <li class="wrapped-slide" aria-label="5 / 10">
+                            <img src="assets/wrapped-2025-2026/5.webp" width="1080" height="1350" loading="lazy" decoding="async"
+                                alt="Draw and Talk etkinliğinden çizim ve topluluk fotoğrafları" />
+                        </li>
+                        <li class="wrapped-slide" aria-label="6 / 10">
+                            <img src="assets/wrapped-2025-2026/6.webp" width="1080" height="1350" loading="lazy" decoding="async"
+                                alt="Godot, Unity ve Blender eğitimlerinden fotoğraflar" />
+                        </li>
+                        <li class="wrapped-slide" aria-label="7 / 10">
+                            <img src="assets/wrapped-2025-2026/7.webp" width="1080" height="1350" loading="lazy" decoding="async"
+                                alt="Çizim ve animasyon etkinliğinden eğitim fotoğrafları" />
+                        </li>
+                        <li class="wrapped-slide" aria-label="8 / 10">
+                            <img src="assets/wrapped-2025-2026/8.webp" width="1080" height="1350" loading="lazy" decoding="async"
+                                alt="TaleWorlds teknik gezisinden topluluk fotoğrafı" />
+                        </li>
+                        <li class="wrapped-slide" aria-label="9 / 10">
+                            <img src="assets/wrapped-2025-2026/9.webp" width="1080" height="1350" loading="lazy" decoding="async"
+                                alt="Kutu oyunu etkinliklerinden topluluk fotoğrafları" />
+                        </li>
+                        <li class="wrapped-slide" aria-label="10 / 10">
+                            <img src="assets/wrapped-2025-2026/10.webp" width="1080" height="1350" loading="lazy" decoding="async"
+                                alt="Yıl sonu mesajı ve gelecek online etkinlik duyurusu" />
+                        </li>
+                    </ol>
+
+                    <div class="wrapped-progress" role="group" aria-label="Görsel seçimi"
+                        data-i18n-aria-label="home.wrapped.paginationLabel">
+                        <button class="is-active" type="button" aria-label="1 / 10" aria-current="true"></button>
+                        <button type="button" aria-label="2 / 10"></button>
+                        <button type="button" aria-label="3 / 10"></button>
+                        <button type="button" aria-label="4 / 10"></button>
+                        <button type="button" aria-label="5 / 10"></button>
+                        <button type="button" aria-label="6 / 10"></button>
+                        <button type="button" aria-label="7 / 10"></button>
+                        <button type="button" aria-label="8 / 10"></button>
+                        <button type="button" aria-label="9 / 10"></button>
+                        <button type="button" aria-label="10 / 10"></button>
                     </div>
                 </div>
             </div>
@@ -229,6 +315,7 @@
     <script src="js/common.js"></script>
     <script src="js/events.js"></script>
     <script src="js/countdown.js"></script>
+    <script src="js/wrapped.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             await renderHomePage();

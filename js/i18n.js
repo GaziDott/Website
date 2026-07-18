@@ -20,6 +20,14 @@ const translations = {
         "home.hero.description": "Gazi Üniversitesi Dijital Oyun Tasarım Topluluğu olarak oyun geliştirme, game jam'ler ve atölye çalışmalarıyla yaratıcılığınızı keşfedin!",
         "home.hero.cta": "Etkinliklere Göz At",
         "home.hero.cta2": "Hakkımızda",
+        "home.wrapped.kicker": "2025–2026 Sezon Kaydı",
+        "home.wrapped.name": "Gazi DOTT Wrapped",
+        "home.wrapped.description": "Atölyelerden game jam'lere, çizim masalarından teknik gezilere: birlikte ürettiğimiz sezonun 10 karesi.",
+        "home.wrapped.hint": "Kaydır veya oklarla ilerle",
+        "home.wrapped.galleryLabel": "Gazi DOTT 2025–2026 sezon özeti galerisi",
+        "home.wrapped.paginationLabel": "Görsel seçimi",
+        "home.wrapped.previous": "Önceki görsel",
+        "home.wrapped.next": "Sonraki görsel",
         "home.featuredJam": "Öne Çıkan Game Jam",
         "home.upcomingWorkshops": "Yaklaşan Atölyeler",
         "home.upcomingEvents": "Yaklaşan Etkinlikler",
@@ -222,7 +230,7 @@ const translations = {
         // Footer
         "footer.codeOfConduct": "Biz kimiz?",
         "footer.contactUs": "Bize Ulaşın",
-        "footer.copyright": "© 2025 Gazi DOTT — Dijital Oyun Tasarım Topluluğu.",
+        "footer.copyright": "© 2026 Gazi DOTT — Dijital Oyun Tasarım Topluluğu.",
 
         // Common
         "common.loading": "Yükleniyor...",
@@ -244,6 +252,14 @@ const translations = {
         "home.hero.description": "Discover your creativity through game development, game jams, and workshops with the Gazi University Digital Game Design Community!",
         "home.hero.cta": "Browse Events",
         "home.hero.cta2": "About Us",
+        "home.wrapped.kicker": "2025–2026 Season Log",
+        "home.wrapped.name": "Gazi DOTT Wrapped",
+        "home.wrapped.description": "From workshops and game jams to drawing tables and studio visits: ten frames from the season we built together.",
+        "home.wrapped.hint": "Swipe or use the arrows",
+        "home.wrapped.galleryLabel": "Gazi DOTT 2025–2026 season recap gallery",
+        "home.wrapped.paginationLabel": "Choose an image",
+        "home.wrapped.previous": "Previous image",
+        "home.wrapped.next": "Next image",
         "home.featuredJam": "Featured Game Jam",
         "home.upcomingWorkshops": "Upcoming Workshops",
         "home.upcomingEvents": "Upcoming Events",
@@ -446,7 +462,7 @@ const translations = {
         // Footer
         "footer.codeOfConduct": "Code of Conduct",
         "footer.contactUs": "Contact Us",
-        "footer.copyright": "© 2025 Gazi DOTT — Digital Game Design Community.",
+        "footer.copyright": "© 2026 Gazi DOTT — Digital Game Design Community.",
 
         // Common
         "common.loading": "Loading...",
