@@ -39,6 +39,11 @@ body::before {
     background-size: 100% 4px;
 }
 
+/* Keep the injected sticky navbar relative to the page, not its empty host. */
+#navbar-placeholder {
+    display: contents;
+}
+
 ::selection {
     color: var(--dott-bg);
     background: var(--dott-primary);
