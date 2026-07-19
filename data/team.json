@@ -44,8 +44,9 @@
     "name": "Egemen Küçük",
     "role_tr": "Organizasyon Birimi",
     "role_en": "Organization Unit",
-    "photo": "assets/team/egemen-kucuk.webp",
-    "order": 5
+    "photo": "assets/team/egemen-kucuk-b759fbc14649.webp",
+    "order": 5,
+    "linkedin": ""
   },
   {
     "id": "yavuz-selim-kibiroglu",
