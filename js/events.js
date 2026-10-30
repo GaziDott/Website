@@ -236,6 +236,24 @@ function getEventDetailCardAttributes(event) {
     return `data-event-detail-id="${eventId}" tabindex="0" aria-haspopup="dialog" aria-label="${label}" title="${title}"`;
 }
 
+/**
+ * Optional on-site page for an event (e.g. a game jam page). Only plain local .html files are allowed.
+ */
+function getEventPageUrl(event) {
+    const page = String(event?.page || '').trim();
+    return /^[a-z0-9][a-z0-9-]*\.html$/i.test(page) ? page : '';
+}
+
+function renderEventPageButton(event, className) {
+    const page = getEventPageUrl(event);
+    if (!page) return '';
+    const label = escapeHTML(t('events.pageLink'));
+    return `<a href="${escapeHTML(page)}" class="${className}">
+        <span>${label}</span>
+        <span class="material-symbols-outlined text-[16px]" aria-hidden="true">arrow_forward</span>
+    </a>`;
+}
+
 function renderEventDetailButton(event, compact = false) {
     const eventId = escapeHTML(event.id);
     const sizeClasses = compact ? 'min-h-8 px-2.5 text-xs' : 'min-h-9 px-3 text-xs';
@@ -378,6 +396,7 @@ function renderFeaturedCard(event) {
                     </div>
                     <div class="flex flex-wrap gap-2 sm:justify-end">
                         ${actions}
+                        ${renderEventPageButton(event, 'inline-flex min-h-9 shrink-0 items-center gap-1 rounded-lg border border-primary bg-primary px-3 text-xs font-bold text-background-dark transition-colors hover:bg-transparent hover:text-primary')}
                         ${renderEventDetailButton(event)}
                     </div>
                 </div>
@@ -430,6 +449,7 @@ function renderEventCard(event) {
                 <span class="text-xs capitalize text-text-muted/70">${dayOfWeek}</span>
                 <div class="flex flex-wrap gap-2 sm:justify-end">
                     ${actions}
+                    ${renderEventPageButton(event, 'inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-primary bg-primary px-3 text-xs font-bold text-background-dark transition-colors hover:bg-transparent hover:text-primary')}
                     ${renderEventDetailButton(event)}
                 </div>
             </div>
@@ -459,6 +479,7 @@ function renderPastEventRow(event) {
             </div>
             <div class="flex flex-wrap justify-end gap-2">
                 ${actions}
+                ${renderEventPageButton(event, 'inline-flex min-h-8 items-center gap-1 rounded-lg border border-primary/40 px-2.5 text-xs font-bold text-primary transition-colors hover:bg-primary hover:text-background-dark')}
                 ${renderEventDetailButton(event, true)}
             </div>
         </div>
@@ -507,7 +528,7 @@ function renderEventDetailContent(event) {
     const locationIcon = event.location?.toLowerCase() === 'online' || event.location?.toLowerCase() === 'çevrimiçi'
         ? 'videocam'
         : 'location_on';
-    const actions = renderEventActions(event, 'event-detail-action');
+    const actions = renderEventPageButton(event, 'event-detail-action') + renderEventActions(event, 'event-detail-action');
 
     return `<div class="event-detail-layout">
         <figure class="event-detail-media">

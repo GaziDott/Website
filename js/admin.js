@@ -557,6 +557,23 @@ async function startMemberPhotoCrop(file) {
     }
 }
 
+async function persistCroppedPhotoForEditingMember(photo) {
+    if (!editingMemberId || !photo) return false;
+
+    const members = await getTeamMembers();
+    const member = members.find(item => item.id === editingMemberId);
+    if (!member) return false;
+
+    const previousPhoto = member.photo || '';
+    if (previousPhoto === photo) return true;
+    if (previousPhoto) queueTeamPhotoDeletion(previousPhoto);
+
+    await updateTeamMember(editingMemberId, { photo });
+    markUnsyncedChanges();
+    await renderAdminTeam();
+    return true;
+}
+
 async function applyMemberCrop() {
     const canvas = document.getElementById('member-crop-canvas');
     if (!canvas || !memberCropImage) return;
@@ -568,9 +585,11 @@ async function applyMemberCrop() {
         drawMemberCrop();
         const webp = await canvasToBlob(canvas, 'image/webp', 0.86);
         currentMemberPhoto = await uploadImageFile(webp);
+        const photoAutoSaved = await persistCroppedPhotoForEditingMember(currentMemberPhoto);
         showMemberPhotoPreview(currentMemberPhoto);
         setMemberPhotoStatus('admin.memberPhotoReady', 'ready');
         closeMemberCrop();
+        if (photoAutoSaved) showToast(t('admin.memberPhotoSavedPending'), 'success');
     } catch (error) {
         console.error(error);
         showToast(t('admin.imageOptimizeFailed'), 'error');
@@ -1631,6 +1650,12 @@ function deleteCookie(name) {
 // --- Sync Lock & Button State Helpers ---
 let _syncInProgress = false;
 
+function hasUnsavedNewMemberPhoto() {
+    return !editingMemberId
+        && typeof currentMemberPhoto === 'string'
+        && currentMemberPhoto.startsWith('data:image/');
+}
+
 function setSyncButtonsLoading(loading) {
     const syncBtn = document.querySelector('[onclick="handleGitHubSync()"]');
     const pullBtn = document.querySelector('[onclick="handleGitHubPull()"]');
@@ -1643,6 +1668,13 @@ function setSyncButtonsLoading(loading) {
 }
 
 async function handleGitHubSync() {
+    if (hasUnsavedNewMemberPhoto()) {
+        showToast(t('admin.saveMemberBeforePublish'), 'error');
+        switchAdminTab('team');
+        document.getElementById('team-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+    }
+
     const token = getCookie(GITHUB_TOKEN_KEY);
     if (!token) {
         showToast(currentLang === 'tr' ? 'Lütfen Ayarlar sekmesinden GitHub Token girin!' : 'Please configure GitHub Token in Settings!', 'error');

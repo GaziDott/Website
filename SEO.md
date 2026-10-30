@@ -1,161 +1,124 @@
-## Uygulama Durumu — 17 Temmuz 2026
+# Gazi DOTT SEO Denetimi
 
-- **Düzeltildi:** `robots.txt`, `sitemap.xml`, tüm genel sayfalarda self-referencing canonical, GitHub Pages için `CNAME`, ana sayfada `Organization` ve `WebSite` JSON-LD.
-- **Doğrulandı:** Üretim alan adı `https://gazidott.org/` GitHub Pages üzerinden `200` yanıt veriyor.
-- **Güvenlik nedeniyle ertelendi:** JavaScript içeriğini statik ön-render etme, Tailwind CDN'i build-time CSS'e dönüştürme ve eski `server.js` yayın yolunu değiştirme. Bunlar görsel, performans veya dağıtım regresyonu oluşturabilecek geniş kapsamlı değişikliklerdir.
-- **Gerçek veri gerektiği için ertelendi:** Test etkinliklerinin kaldırılması, güncel etkinlik yayınlanması ve kalıcı etkinlik detay sayfaları/Event schema. Doğrulanmış etkinlik bilgisi olmadan içerik üretilmedi veya veri silinmedi.
+**Tarih:** 18 Temmuz 2026
+**Kapsam:** `https://gazidott.org/` ve beş genel sayfa
+**Sağlık skoru:** **51,2/100 (D)**, 34 kanıta dayalı kontrol
 
-• ## Executive Summary
+> Bu puan teknik önceliklendirme içindir; Google sıralama puanı değildir. Search Console ve CrUX alan verisine erişim olmadığından index kapsamı, sorgular, backlinkler ve gerçek kullanıcı INP değeri doğrulanamadı.
 
-  - SEO health: 38.9/100 (F) from 37 repository checks. This is a local technical score, not a Google ranking score.
-  - Weakest categories: schema 0, technical SEO 37.5, performance 37.5, images 37.5, and content 43.8.
-  - Page-level scores range from 59 to 73. Heading structure is healthy, but metadata and indexable content are weak.
-  - Highest-impact problems are missing crawl signals, JavaScript-only content/navigation, placeholder event data, absent
-    structured data, and runtime Tailwind compilation.
+## Yönetici Özeti
 
-  - Search Console coverage, HTTPS redirects, backlinks, and field Core Web Vitals could not be verified without the
-    production domain and analytics access.
+- Teknik temel iyi durumda: HTTPS/www yönlendirmeleri, robots, sitemap, canonical, 404 ve GitHub Pages yayını doğru; teknik kategori **75/100**.
+- En zayıf alan içerik (**25/100**): 18 etkinliğin hiçbiri güncel değil, etkinliklerin kalıcı URL'leri yok ve bazı genel sayfalar ince içerikli.
+- Mobil laboratuvar LCP'si iki ölçümde **5,47-5,92 sn**; uzak hero görseli 307 KB ve Tailwind CDN tarayıcıda derleme yapıyor.
+- Navigasyon, footer ve etkinlikler ilk HTML'de bulunmuyor. JavaScript sonrası içerik geliyor; bu durum tarama/render gecikmesi ve Google dışı botlar için eksik keşif riski oluşturuyor.
+- En hızlı kazanımlar: başlıkları genişletmek, sosyal paylaşım metaları eklemek ve hero görselini yerelleştirip optimize etmek.
 
-  ## Page Scores
+## Skor Dağılımı
 
-   Page         Score    Main weakness
-  ━━━━━━━━━━━  ━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   Home            73    Short metadata; only 109 static words
-  ───────────  ───────  ────────────────────────────────────────────────────
-   Events          65    14 static words; event content requires JavaScript
-  ───────────  ───────  ────────────────────────────────────────────────────
-   Game Jams       66    28 static words; no event detail URLs
-  ───────────  ───────  ────────────────────────────────────────────────────
-   About           69    Thin content and placeholder team identities
-  ───────────  ───────  ────────────────────────────────────────────────────
-   Contact         59    Short metadata and limited internal context
+| Kategori | Skor | Ana neden |
+|---|---:|---|
+| Teknik | 75,0 | Temel tarama sinyalleri iyi; ilk HTML JavaScript'e bağımlı |
+| Görseller | 66,7 | Etkinlik afşleri WebP; responsive kaynak ve kart alt metni eksik |
+| On-page | 57,1 | H1/hiyerarşi iyi; başlık, ilk link grafiği ve sosyal meta zayıf |
+| Schema | 50,0 | Organization/WebSite var; Event yok |
+| AI/cevap motoru hazırlığı | 50,0 | Kurum net; etkinlik yanıtları ilk HTML'de değil |
+| Performans | 41,7 | LCP, uzak hero ve runtime Tailwind |
+| İçerik | 25,0 | Güncellik, kalıcı etkinlik sayfaları ve ince sayfalar |
 
-  ## Technical Findings
+## Sayfa Skorları
 
-   Issue     No robots.txt or sitemap
-   Impact    High
-   Evidence  Neither exists in the published root configured by netlify.toml:1
-   Fix       Add both files, list only canonical public URLs, and reference the sitemap from robots.txt
-   Priority  1
-  ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-   Issue     No canonical or URL normalization
-   Impact    High
-   Evidence  Zero canonical tags; no redirect rules distinguish / from /index.html
-   Fix       Confirm the production domain, add self-referencing canonicals, and define one URL format
-   Priority  1
-  ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-   Issue     Navigation and content depend on JavaScript
-   Impact    High
-   Evidence  Navigation is generated in js/common.js:63; events are fetched in js/events.js:50
-   Fix       Render navigation and primary content into the initial HTML or pre-render during the build
-   Priority  1
-  ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-   Issue     Hosting targets conflict
-   Impact    Conditional High
-   Evidence  Netlify publishes the root, while server.js:104 serves a nonexistent public/ directory
-   Fix       Choose one production path and ensure it serves the same canonical files and headers
-   Priority  2
-  ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-   Issue     English version has no indexable URL
-   Impact    Medium
-   Evidence  Language is stored client-side in js/i18n.js:385; <html lang="tr"> never changes
-   Fix       Create /en/ URLs with hreflang, or keep English intentionally non-indexable and update lang dynamically
-   Priority  3
-  ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-   Issue     Production CSS is compiled in the browser
-   Impact    High
-   Evidence  Every page loads Tailwind CDN, including index.html:10
-   Fix       Compile and purge Tailwind at build time; ship a static minified stylesheet
-   Priority  2
+`seo_checker.py` ilk HTML'i analiz eder; JavaScript sonrası içerik ayrıca Chromium ile ölçüldü.
 
-  ## On-Page Findings
+| Sayfa | Skor | İlk HTML kelime | Render kelime | Ana zayıflık |
+|---|---:|---:|---:|---|
+| Ana sayfa | 73 | 109 | 234 | Kısa metadata, yavaş hero |
+| Etkinlikler | 65 | 14 | 1.166 | Temel içerik tamamen JavaScript ile geliyor |
+| Game Jam'ler | 66 | 28 | 167 | İnce içerik, kalıcı jam URL'si yok |
+| Hakkımızda | 69 | 82 | 148 | Placeholder ekip ve sınırlı güven sinyali |
+| İletişim | 59 | 49 | 87 | Kısa metadata ve az bağlamsal iç link |
 
-   Issue                           Impact      Evidence                        Fix                              Priority
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━
-   Titles underuse SERP space      Medium      All are 20–43 characters        Add intent modifiers such as     2
-                                                                               “Gazi Üniversitesi”, “oyun
-                                                                               geliştirme”, “atölye” and
-                                                                               “Ankara” where accurate
-  ──────────────────────────────  ──────────  ──────────────────────────────  ───────────────────────────────  ──────────
-   Meta descriptions are short     Medium      All are 54–111 characters       Write unique 140–160             2
-                                                                               character descriptions with
-                                                                               audience, activity, location,
-                                                                               and action
-  ──────────────────────────────  ──────────  ──────────────────────────────  ───────────────────────────────  ──────────
-   Social sharing metadata         Medium      No Open Graph or Twitter        Add og:title, og:description,    2
-   absent                                      metadata on public pages        og:image, og:url, and Twitter
-                                                                               card metadata
-  ──────────────────────────────  ──────────  ──────────────────────────────  ───────────────────────────────  ──────────
-   Initial internal link graph     Medium      Events, About, and Game Jams    Place crawlable navigation       2
-   is weak                                     contain no static links         and contextual links directly
-                                               before JavaScript executes      in HTML
-  ──────────────────────────────  ──────────  ──────────────────────────────  ───────────────────────────────  ──────────
-   Event image alternatives are    Medium      Generated images use alt=""     Use the event title as           3
-   empty                                       in js/events.js:208             concise alt text when the
-                                                                               image communicates event
-                                                                               information
-  ──────────────────────────────  ──────────  ──────────────────────────────  ───────────────────────────────  ──────────
-   Heading structure is healthy    Positive    Every public page has one H1    Preserve during future           —
-                                               and a valid H2/H3 hierarchy     content expansion
+## Teknik SEO Bulguları
 
-  ## Content Findings
+| Sorun | Etki | Kanıt | Düzeltme | Öncelik |
+|---|---|---|---|---:|
+| İlk HTML'de navigasyon ve etkinlik içeriği yok | Yüksek | Navbar/footer `js/common.js`, kartlar `js/events.js` tarafından ekleniyor; Events kaynak HTML'i 14 kelime ve 0 link | Navigasyonu doğrudan HTML'e koy; etkinlik özetlerini JSON'dan build sırasında statik üret | 1 |
+| Admin için robots/noindex çakışı | Orta | `robots.txt` admin'i engelliyor, sayfada ayrıca `noindex` var; engellenen bot `noindex`i okuyamayabilir | Robots'taki admin yasağını kaldır, sayfadaki `noindex, nofollow`u koru | 3 |
+| İngilizce sürümün URL ve dil sinyali yok | Orta | Dil localStorage ile değişiyor; URL aynı ve `<html lang="tr">` sabit | Sadece Türkçe indeksle veya `/en/` + hreflang kur; geçişte `html.lang` değiştir | 3 |
 
-   Issue                            Impact    Evidence                         Fix                              Priority
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━
-   Public pages are thin            High      Static word counts range from    Add useful participation,        1
-                                              14 to 109                        eligibility, workshop format,
-                                                                               tools, venue, history, and
-                                                                               outcome information
-  ───────────────────────────────  ────────  ───────────────────────────────  ───────────────────────────────  ──────────
-   Published data contains test     High      Titles such as asdas remain      Remove test entries and          1
-   content                                    in data/events.json:18           publish complete Turkish and
-                                                                               English event records
-  ───────────────────────────────  ────────  ───────────────────────────────  ───────────────────────────────  ──────────
-   No current events                High      Every event is dated March       Publish upcoming events or       1
-                                              2026 or earlier                  clearly maintained recaps
-                                                                               with dates, outcomes, photos,
-                                                                               and project links
-  ───────────────────────────────  ────────  ───────────────────────────────  ───────────────────────────────  ──────────
-   Team information is              Medium    All organizers are “İsim         Add real organizers, roles,      2
-   placeholder content                        Soyisim” in data/team.json:4     photos, and relevant
-                                                                               experience
-  ───────────────────────────────  ────────  ───────────────────────────────  ───────────────────────────────  ──────────
-   Trust documentation is           Medium    “Code of Conduct” links to       Publish actual conduct and       3
-   incomplete                                 About in js/common.js:155; no    privacy pages
-                                              privacy page exists
-  ───────────────────────────────  ────────  ───────────────────────────────  ───────────────────────────────  ──────────
-   No indexable event detail        High      Events exist only as cards       Generate one permanent URL       2
-   pages                                      loaded from JSON                 per event with descriptive
-                                                                               content and valid Event JSON-
-                                                                               LD
+### Doğrulanan Olumlu Sinyaller
 
-  ## Keyword Map
+- `http://gazidott.org/` ve `https://www.gazidott.org/` tek `301` ile `https://gazidott.org/` adresine gidiyor.
+- Beş genel URL `200`, bilinmeyen URL `404` döndürüyor.
+- `robots.txt` ve `sitemap.xml` canlıda `200`; sitemap beş canonical genel URL içeriyor.
+- Tüm genel sayfalarda self-referencing canonical ve tek H1 var.
+- `/index.html` ayrıca açılsa da canonical ana kök URL'yi gösteriyor.
 
-   Page         Recommended primary target
-  ━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   Home         Gazi Üniversitesi dijital oyun tasarımı topluluğu
-  ───────────  ──────────────────────────────────────────────────────
-   Events       Gazi DOTT oyun geliştirme etkinlikleri ve atölyeleri
-  ───────────  ──────────────────────────────────────────────────────
-   Game Jams    Gazi DOTT game jam / Ankara öğrenci game jam
-  ───────────  ──────────────────────────────────────────────────────
-   About        Gazi DOTT hakkında ve topluluk faaliyetleri
-  ───────────  ──────────────────────────────────────────────────────
-   Contact      Gazi DOTT iletişim
+## On-Page Bulguları
 
-  No major cannibalization exists yet. Keep Home focused on the entity and About focused on mission, history, and
-  organization.
+| Sorun | Etki | Kanıt | Düzeltme | Öncelik |
+|---|---|---|---|---:|
+| Başlıklar arama niyetini eksik kullanıyor | Yüksek | Beş title 20-43 karakter; araç hedef aralığı 50-60 | Gazi Üniversitesi, oyun geliştirme, Ankara ve sayfa konusunu doğru olduğu yerde ekle | 1 |
+| İlk HTML iç link grafiği zayıf | Yüksek | Events, Game Jams ve About kaynak HTML'inde 0 link | Ana navigasyon ve temel bağlamsal linkleri statik HTML'e taşı | 1 |
+| Meta açıklamaları kısa | Orta | Açıklamalar 54-111 karakter | Her sayfaya benzersiz, konu + hedef kitle + konum + eylem içeren yaklaşık 140-160 karakter yaz | 2 |
+| Open Graph/Twitter Card yok | Orta | Genel sayfalarda `og:*` ve `twitter:*` etiketi bulunmuyor | `og:title`, `og:description`, `og:url`, `og:image`, `twitter:card` ekle | 2 |
+| Render edilen kart görselleri boş alt kullanıyor | Orta | Events'te render sonrası 19 görselin alt değeri boş; modal görseli açıklamalı | Afş bilgi taşıyorsa etkinlik başlığıyla kısa alt ver; salt dekoratif kopyalarda boş altı koru | 3 |
 
-  ## Prioritized Action Plan
+## İçerik Bulguları
 
-  1. Foundation: Confirm the production domain and hosting path; add canonicals, redirects, robots.txt, and sitemap.xml.
-  2. Content integrity: Remove test events and placeholder team records before indexing.
-  3. Crawlability: Render navigation and core event content in initial HTML; create dedicated event URLs.
-  4. Metadata: Expand titles/descriptions and add Open Graph sharing metadata.
-  5. Structured data: Add Organization and WebSite JSON-LD globally, then Event schema on genuine event pages.
-  6. Performance: Replace Tailwind CDN with compiled CSS; optimize the hero and logo with local WebP/AVIF variants and
-     responsive sizing.
+| Sorun | Etki | Kanıt | Düzeltme | Öncelik |
+|---|---|---|---|---:|
+| Güncel etkinlik yok | Yüksek | 18 etkinliğin 0'ı 18 Temmuz 2026 sonrasında | Yeni etkinlikleri düzenli yayınla; boş dönemde geçmiş etkinlik çıktıları/fotoğraflarını görünür kıl | 1 |
+| Kalıcı etkinlik URL'leri yok | Yüksek | Detaylar modalda açılıyor; paylaşılabilir/crawlable etkinlik adresi bulunmuyor | `events/<slug>.html` dosyalarını `events.json`dan statik üret; modal bu URL'ye de bağlansın | 1 |
+| Genel sayfalar ince | Yüksek | Render sonrası About 148, Game Jams 167, Contact 87 kelime | Katılım, format, geçmiş, süreç, mekân ve beklenen çıktıları gerçek bilgilerle ekle | 2 |
+| Ekip verisi placeholder | Orta | Üç kayıt `İsim Soyisim` | Gerçek ad, rol, dönem ve deneyim bilgisini yayınla veya bölümü geçici kaldır | 2 |
+| Güven sayfaları eksik | Orta | Ayrı gizlilik ve davranış kuralları sayfası yok | Kısa, gerçek uygulamayı yansıtan gizlilik ve topluluk kuralları sayfaları ekle | 3 |
 
-  7. Trust: Add real organizer information, privacy policy, and an actual code of conduct.
-  8. Measurement: Connect Search Console, submit the sitemap, and collect field LCP/INP/CLS data against the good
-     thresholds of 2.5s, 200ms, and 0.1.
+## Schema Bulguları
+
+| Sorun | Etki | Kanıt | Düzeltme | Öncelik |
+|---|---|---|---|---:|
+| Event schema yok | Yüksek | 18 etkinlik var fakat hiç `Event` JSON-LD yok | Kalıcı etkinlik sayfalarına `name`, `startDate`, `location`, `image`, `description`, `organizer`, `eventStatus` ekle | 1 |
+| Kurum schema mevcut | Olumlu | Ana sayfada Organization + WebSite JSON-LD, logo, e-posta ve sameAs var | Kalıcı kimlikleri koru; değişen sosyal URL'leri güncel tut | - |
+
+## Performans Bulguları
+
+| Sorun | Etki | Kanıt | Düzeltme | Öncelik |
+|---|---|---|---|---:|
+| Mobil LCP zayıf | Yüksek | Chromium 3G + 4x CPU: 5,47 ve 5,92 sn; iyi eşik <=2,5 sn | Hero ve CSS işini azalt; ardından Lighthouse ve gerçek alan verisiyle tekrar ölç | 1 |
+| Uzak hero görseli ağır | Yüksek | Unsplash kaynak 307 KB ve 3,57 sn; ana LCP adayı | Görseli lisansı uygun yerel WebP/AVIF'e çevir, responsive varyant ve preload kullan | 1 |
+| Tailwind production'da tarayıcıda derleniyor | Yüksek | Altı sayfa CDN scriptini yüklüyor; 7 uzun görev toplam yaklaşık 1,1 sn | Tailwind'i build-time derle/purge et; görsel regresyon testiyle statik minified CSS yayınla | 1 |
+| CLS iyi | Olumlu | Mobil laboratuvar CLS 0,0034; iyi eşik <=0,1 | Sabit boyut/aspect-ratio kurallarını koru | - |
+| Alan INP/LCP verisi yok | Bilinmiyor | Search Console/CrUX erişimi yok; PageSpeed API kota nedeniyle 429 verdi | Search Console Core Web Vitals raporunu izle; 28 günlük p75 veriyi kaydet | 3 |
+
+## Anahtar Kelime Haritası
+
+| Sayfa | Birincil hedef |
+|---|---|
+| Ana sayfa | Gazi Üniversitesi dijital oyun tasarımı topluluğu |
+| Etkinlikler | Gazi DOTT oyun geliştirme etkinlikleri ve atölyeleri |
+| Game Jam'ler | Ankara öğrenci game jam / Gazi DOTT game jam |
+| Hakkımızda | Gazi DOTT hakkında ve topluluk faaliyetleri |
+| İletişim | Gazi DOTT iletişim |
+
+Mevcut beş sayfa arasında belirgin anahtar kelime yamyamlığı yok. Ana sayfa kurum kimliğine, About misyon ve ekibe, Events ise etkinlik niyetine odaklı kalmalı.
+
+## Öncelikli Eylem Planı
+
+1. **Kritik:** Indexlemeyi tamamen engelleyen kritik hata bulunmadı.
+2. **Yüksek / performans:** Uzak hero görselini yerel responsive WebP/AVIF ile değiştir ve preload et.
+3. **Yüksek / performans:** Tailwind CDN'i build-time statik CSS'e taşı; masaüstü/mobil görsel regresyonla yayınla.
+4. **Yüksek / taranabilirlik:** Statik navigasyon ekle; `events.json`dan build sırasında etkinlik özetleri ve kalıcı detay sayfaları üret.
+5. **Yüksek / schema:** Kalıcı detay sayfalarına Event JSON-LD ekle ve sitemap'e dahil et.
+6. **Yüksek / içerik:** Yeni etkinlikleri yayınla; About, Game Jams ve Contact sayfalarını gerçek ve faydalı bilgilerle genişlet.
+7. **Hızlı kazanım:** Beş title ve meta description'ı hedef sorgularla benzersiz biçimde geliştir.
+8. **Hızlı kazanım:** Open Graph/Twitter Card etiketleri ve paylaşım görseli ekle.
+9. **Orta:** Admin robots/noindex çakışını, dil sinyalini, ekip placeholder'larını ve güven sayfalarını düzelt.
+10. **Ölçüm:** Search Console'a sitemap gönder; Coverage, sorgu, CTR ve 28 günlük p75 LCP/INP/CLS verisini takip et.
+
+## Denetim Notları
+
+- Yerel araçlar: `seo_checker.py`, `seo_health_scorer.py`.
+- Canlı testler: HTTP yönlendirme/header kontrolleri ve Playwright Chromium render testi.
+- Performans profili: 390x844 viewport, 1,6 Mbps indirme, 150 ms gecikme, 4x CPU yavaşlatma; laboratuvar sonucu alan Core Web Vitals yerine geçmez.
+- Google PageSpeed API anahtarsız kota vermedi (`429 RESOURCE_EXHAUSTED`); bu nedenle PageSpeed puanı raporlanmadı.

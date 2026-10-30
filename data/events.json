@@ -325,8 +325,15 @@
     "category": "gamejam",
     "location": "Teknopark Ankara",
     "image": "assets/events/rakun-game-jam-2026.webp",
-    "links": [],
-    "link": "",
+    "page": "rakun-jam-2026.html",
+    "links": [
+      {
+        "label_tr": "Oyunlar (Fiuby)",
+        "label_en": "Games (Fiuby)",
+        "url": "https://fiuby.com/jams/rakun-jam-2026"
+      }
+    ],
+    "link": "https://fiuby.com/jams/rakun-jam-2026",
     "createdAt": "2026-07-18T00:00:00.000Z"
   },
   {

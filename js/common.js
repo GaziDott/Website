@@ -71,7 +71,7 @@ function getNavbarHTML() {
     ];
 
     const desktopLinks = navLinks.map(link => {
-        const isActive = page === link.id;
+        const isActive = page === link.id || (link.id === 'gamejams' && page === 'rakun-jam-2026');
         const classes = isActive
             ? 'inline-flex min-h-9 items-center rounded-lg border border-primary/30 bg-primary/10 px-3 text-sm font-bold text-primary'
             : 'inline-flex min-h-9 items-center rounded-lg border border-transparent px-3 text-sm font-medium text-text-muted transition-colors hover:border-border-dark hover:bg-card-dark/60 hover:text-white';
@@ -79,7 +79,7 @@ function getNavbarHTML() {
     }).join('\n                    ');
 
     const mobileLinks = navLinks.map(link => {
-        const isActive = page === link.id;
+        const isActive = page === link.id || (link.id === 'gamejams' && page === 'rakun-jam-2026');
         const classes = isActive
             ? 'block border-l-2 border-primary bg-primary/10 px-5 py-3 text-base font-bold text-primary'
             : 'block border-l-2 border-transparent px-5 py-3 text-base font-medium text-text-muted transition-colors hover:bg-card-dark/60 hover:text-white';
