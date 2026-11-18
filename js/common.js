@@ -105,7 +105,7 @@ function getNavbarHTML() {
                     <button data-lang="tr" class="${currentLang === 'tr' ? 'active' : ''}">TR</button>
                     <button data-lang="en" class="${currentLang === 'en' ? 'active' : ''}">EN</button>
                 </div>
-                <a href="https://linktr.ee/gazidott" target="_blank" rel="noopener noreferrer" id="join-community-btn"
+                <a href="https://links.gazidott.org" target="_blank" rel="noopener noreferrer" id="join-community-btn"
                     class="command-button command-button-primary hidden sm:inline-flex"
                     data-i18n="nav.joinCommunity">${t('nav.joinCommunity')}<span class="material-symbols-outlined text-[18px]">north_east</span></a>
                 <button id="mobile-menu-btn" type="button" aria-label="Menüyü aç" aria-controls="mobile-menu-panel" aria-expanded="false" class="grid h-10 w-10 place-items-center rounded-lg border border-border-dark text-text-muted transition-colors hover:border-primary/40 hover:text-white md:hidden">
@@ -126,7 +126,7 @@ function getNavbarHTML() {
             ${mobileLinks}
         </nav>
         <div class="p-4 border-t border-border-dark">
-            <a href="https://linktr.ee/gazidott" target="_blank" rel="noopener noreferrer" id="join-community-btn-mobile"
+            <a href="https://links.gazidott.org" target="_blank" rel="noopener noreferrer" id="join-community-btn-mobile"
                 class="command-button command-button-primary w-full"
                 data-i18n="nav.joinCommunity">${t('nav.joinCommunity')}<span class="material-symbols-outlined text-[18px]">north_east</span></a>
         </div>
@@ -152,6 +152,7 @@ function getFooterHTML() {
                 </div>
                 <div class="flex flex-wrap gap-x-6 gap-y-2 text-text-muted">
                     <a class="hover:text-primary transition-colors" href="contact.html" data-i18n="footer.contactUs">${t('footer.contactUs')}</a>
+                    <a class="hover:text-primary transition-colors" href="https://links.gazidott.org" target="_blank" rel="noopener noreferrer" data-i18n="footer.links">${t('footer.links')}</a>
                     <a class="hover:text-primary transition-colors" href="about.html" data-i18n="footer.codeOfConduct">${t('footer.codeOfConduct')}</a>
                 </div>
                 <div class="text-text-muted md:text-right" data-i18n="footer.copyright">

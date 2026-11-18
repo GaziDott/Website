@@ -297,6 +297,7 @@ const translations = {
         // Footer
         "footer.codeOfConduct": "Biz kimiz?",
         "footer.contactUs": "Bize Ulaşın",
+        "footer.links": "Tüm Bağlantılar",
         "footer.copyright": "© 2026 Gazi DOTT — Dijital Oyun Tasarım Topluluğu.",
 
         // Common
@@ -596,6 +597,7 @@ const translations = {
         // Footer
         "footer.codeOfConduct": "Code of Conduct",
         "footer.contactUs": "Contact Us",
+        "footer.links": "All Links",
         "footer.copyright": "© 2026 Gazi DOTT — Digital Game Design Community.",
 
         // Common
