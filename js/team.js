@@ -165,38 +165,40 @@ function normalizeLinkedInUrl(value) {
     }
 }
 
+const TEAM_GROUPS = [
+    { id: 'leadership', icon: 'workspace_premium' },
+    { id: 'organization', icon: 'event' },
+    { id: 'design', icon: 'palette' },
+    { id: 'social', icon: 'campaign' },
+    { id: 'audit', icon: 'verified_user' },
+];
+
 /**
- * Render team members on the About page
+ * Resolve a member's group; infers one from the Turkish role for entries without a group field.
  */
-async function renderTeamMembers() {
-    const container = document.getElementById('team-grid');
-    if (!container) return;
+function getMemberGroup(member) {
+    if (TEAM_GROUPS.some(g => g.id === member.group)) return member.group;
+    const role = (member.role_tr || '').toLocaleLowerCase('tr');
+    if (role.includes('organizasyon')) return 'organization';
+    if (role.includes('tasarım')) return 'design';
+    if (role.includes('sosyal medya')) return 'social';
+    if (role.includes('denetim') || role.includes('danışman')) return 'audit';
+    return 'leadership';
+}
 
-    const members = await getTeamMembers();
-    members.sort((a, b) => (a.order || 0) - (b.order || 0));
+function renderMemberCard(member, index, groupLabel) {
+    const memberName = getMemberName(member);
+    const safeName = escapeHTML(memberName);
+    const safePhoto = escapeHTML(member.photo);
+    const safeRole = escapeHTML(getMemberRole(member));
+    const linkedInUrl = normalizeLinkedInUrl(member.linkedin);
+    const safeLinkedInUrl = escapeHTML(linkedInUrl);
+    const safeLinkedInLabel = escapeHTML(`${t('about.openLinkedIn')} — ${memberName}`);
 
-    if (members.length === 0) {
-        container.innerHTML = `
-            <div class="hud-panel-muted col-span-full flex min-h-52 flex-col items-center justify-center px-6 py-12 text-center text-text-muted">
-                <span class="material-symbols-outlined mb-3 block text-4xl text-primary">group</span>
-                <p class="text-sm">${currentLang === 'tr' ? 'Ekip bilgileri yakında eklenecektir.' : 'Team information will be added soon.'}</p>
-            </div>`;
-        return;
-    }
-
-    container.innerHTML = members.map((member, index) => {
-        const memberName = getMemberName(member);
-        const safeName = escapeHTML(memberName);
-        const safePhoto = escapeHTML(member.photo);
-        const safeRole = escapeHTML(getMemberRole(member));
-        const linkedInUrl = normalizeLinkedInUrl(member.linkedin);
-        const safeLinkedInUrl = escapeHTML(linkedInUrl);
-        const safeLinkedInLabel = escapeHTML(`${t('about.openLinkedIn')} — ${memberName}`);
-
-        return `
+    return `
         <article class="hud-panel card-hover group p-5">
             <div class="mb-5 flex items-center justify-between border-b border-border-dark/70 pb-3">
-                <span class="text-[10px] font-bold uppercase text-text-muted">${t('label.coreTeam')}</span>
+                <span class="text-[10px] font-bold uppercase text-text-muted">${escapeHTML(groupLabel)}</span>
                 <span class="font-mono text-xs text-primary">${String(index + 1).padStart(2, '0')}</span>
             </div>
             <div class="flex items-center gap-4">
@@ -210,7 +212,7 @@ async function renderTeamMembers() {
                        </div>`
                 }
                 <div class="min-w-0 flex-1 text-left">
-                    <h3 class="truncate text-base font-bold text-white transition-colors group-hover:text-primary">${safeName}</h3>
+                    <h3 class="truncate text-base font-bold text-white transition-colors group-hover:text-primary" title="${safeName}">${safeName}</h3>
                     <p class="mt-1 text-sm font-medium text-text-muted">${safeRole}</p>
                 </div>
                 ${linkedInUrl ? `
@@ -223,6 +225,46 @@ async function renderTeamMembers() {
                     </a>` : ''}
             </div>
         </article>`;
+}
+
+/**
+ * Render team members on the About page, grouped by unit
+ */
+async function renderTeamMembers() {
+    const container = document.getElementById('team-grid');
+    if (!container) return;
+
+    const members = (await getTeamMembers()).slice();
+    members.sort((a, b) => (a.order || 0) - (b.order || 0));
+
+    if (members.length === 0) {
+        container.innerHTML = `
+            <div class="hud-panel-muted flex min-h-52 flex-col items-center justify-center px-6 py-12 text-center text-text-muted">
+                <span class="material-symbols-outlined mb-3 block text-4xl text-primary">group</span>
+                <p class="text-sm">${currentLang === 'tr' ? 'Ekip bilgileri yakında eklenecektir.' : 'Team information will be added soon.'}</p>
+            </div>`;
+        return;
+    }
+
+    container.innerHTML = TEAM_GROUPS.map(group => {
+        const groupMembers = members.filter(m => getMemberGroup(m) === group.id);
+        if (groupMembers.length === 0) return '';
+        const groupLabel = t(`about.group.${group.id}`);
+
+        return `
+        <section aria-labelledby="team-group-${group.id}">
+            <div class="mb-4 flex items-center gap-3">
+                <span class="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-primary/25 bg-primary/10 text-primary">
+                    <span class="material-symbols-outlined text-[20px]">${group.icon}</span>
+                </span>
+                <h3 id="team-group-${group.id}" class="text-lg font-bold text-white">${escapeHTML(groupLabel)}</h3>
+                <span class="font-mono text-xs text-text-muted">${String(groupMembers.length).padStart(2, '0')}</span>
+                <span class="h-px flex-1 bg-border-dark/70" aria-hidden="true"></span>
+            </div>
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                ${groupMembers.map((member, index) => renderMemberCard(member, index, groupLabel)).join('')}
+            </div>
+        </section>`;
     }).join('');
 }
 

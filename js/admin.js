@@ -1261,6 +1261,7 @@ async function handleEditMember(id) {
     form.member_name.value = member.name || '';
     form.role_tr.value = member.role_tr || '';
     form.role_en.value = member.role_en || '';
+    form.group.value = getMemberGroup(member);
     form.linkedin.value = member.linkedin || '';
 
     currentMemberPhoto = member.photo || '';
@@ -1337,6 +1338,7 @@ async function handleTeamFormSubmit(e) {
         name: form.member_name.value.trim(),
         role_tr: form.role_tr.value.trim(),
         role_en: form.role_en.value.trim(),
+        group: form.group.value,
         linkedin: linkedInUrl,
         photo: currentMemberPhoto,
     };

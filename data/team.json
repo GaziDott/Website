@@ -1,51 +1,66 @@
 [
   {
+    "id": "ibrahim-alper-dogru",
+    "name": "Prof. Dr. İbrahim Alper Doğru",
+    "role_tr": "Topluluk Danışmanı",
+    "role_en": "Community Advisor",
+    "group": "leadership",
+    "photo": "assets/team/ibrahim-alper-dogru.webp",
+    "order": 0
+  },
+  {
     "id": "mehmet-alper-gulender",
     "name": "Mehmet Alper Gülender",
     "role_tr": "Başkan",
     "role_en": "President",
+    "group": "leadership",
     "photo": "assets/team/mehmet-alper-gulender.webp",
-    "order": 0
+    "order": 1
   },
   {
     "id": "elif-yagmur",
     "name": "Elif Yağmur",
     "role_tr": "Başkan Yardımcısı",
     "role_en": "Vice President",
+    "group": "leadership",
     "photo": "assets/team/elif-yagmur.webp",
-    "order": 1
+    "order": 2
   },
   {
     "id": "sueda-eken",
     "name": "Süeda Eken",
     "role_tr": "Organizasyon Birim Başkanı",
     "role_en": "Organization Unit Lead",
+    "group": "leadership",
     "photo": "assets/team/sueda-eken.webp",
-    "order": 2
+    "order": 3
   },
   {
-    "id": "cansu-aydemir",
-    "name": "Cansu Aydemir",
+    "id": "selen-mercimek",
+    "name": "Selen Mercimek",
     "role_tr": "Tasarım Birim Başkanı",
     "role_en": "Design Unit Lead",
-    "photo": "assets/team/cansu-aydemir.webp",
-    "order": 3
+    "group": "leadership",
+    "photo": "assets/team/selen-mercimek.webp",
+    "order": 4
   },
   {
     "id": "gunes-isil-karakus",
     "name": "Güneş Işıl Karakuş",
     "role_tr": "Sosyal Medya Birim Başkanı",
     "role_en": "Social Media Unit Lead",
+    "group": "leadership",
     "photo": "assets/team/gunes-isil-karakus.webp",
-    "order": 4
+    "order": 5
   },
   {
     "id": "egemen-kucuk",
     "name": "Egemen Küçük",
     "role_tr": "Organizasyon Birimi",
     "role_en": "Organization Unit",
+    "group": "organization",
     "photo": "assets/team/egemen-kucuk-b759fbc14649.webp",
-    "order": 5,
+    "order": 6,
     "linkedin": ""
   },
   {
@@ -53,15 +68,8 @@
     "name": "Yavuz Selim Kibiroğlu",
     "role_tr": "Organizasyon Birimi",
     "role_en": "Organization Unit",
+    "group": "organization",
     "photo": "assets/team/yavuz-selim-kibiroglu.webp",
-    "order": 6
-  },
-  {
-    "id": "mert-kutuk",
-    "name": "Mert Kütük",
-    "role_tr": "Organizasyon Birimi",
-    "role_en": "Organization Unit",
-    "photo": "assets/team/mert-kutuk.webp",
     "order": 7
   },
   {
@@ -69,6 +77,7 @@
     "name": "Azra Deveci",
     "role_tr": "Organizasyon Birimi",
     "role_en": "Organization Unit",
+    "group": "organization",
     "photo": "",
     "order": 8
   },
@@ -77,6 +86,7 @@
     "name": "Akif Akçay",
     "role_tr": "Organizasyon Birimi",
     "role_en": "Organization Unit",
+    "group": "organization",
     "photo": "",
     "order": 9
   },
@@ -85,111 +95,107 @@
     "name": "Mert Demircioğlu",
     "role_tr": "Organizasyon Birimi",
     "role_en": "Organization Unit",
+    "group": "organization",
     "photo": "assets/team/mert-demircioglu.webp",
     "order": 10
-  },
-  {
-    "id": "humeyra-yuce",
-    "name": "Hümeyra Yüce",
-    "role_tr": "Organizasyon Birimi",
-    "role_en": "Organization Unit",
-    "photo": "",
-    "order": 11
-  },
-  {
-    "id": "selen-mercimek",
-    "name": "Selen Mercimek",
-    "role_tr": "Tasarım Birimi",
-    "role_en": "Design Unit",
-    "photo": "assets/team/selen-mercimek.webp",
-    "order": 12
   },
   {
     "id": "mehmet-aras-simsir",
     "name": "Mehmet Aras Şimşir",
     "role_tr": "Tasarım Birimi",
     "role_en": "Design Unit",
+    "group": "design",
     "photo": "assets/team/mehmet-aras-simsir.webp",
-    "order": 13
+    "order": 11
   },
   {
     "id": "giray-yazici",
     "name": "Giray Yazıcı",
     "role_tr": "Tasarım Birimi",
     "role_en": "Design Unit",
+    "group": "design",
     "photo": "assets/team/giray-yazici.webp",
-    "order": 14
+    "order": 12
   },
   {
     "id": "arda-erkilic",
     "name": "Arda Erkılıç",
     "role_tr": "Tasarım Birimi",
     "role_en": "Design Unit",
+    "group": "design",
     "photo": "",
-    "order": 15
+    "order": 13
   },
   {
     "id": "menderes-celik",
     "name": "Menderes Çelik",
     "role_tr": "Tasarım Birimi",
     "role_en": "Design Unit",
+    "group": "design",
     "photo": "",
-    "order": 16
+    "order": 14
   },
   {
     "id": "umut-ergun",
     "name": "Umut Ergün",
     "role_tr": "Tasarım Birimi",
     "role_en": "Design Unit",
+    "group": "design",
     "photo": "",
-    "order": 17
-  },
-  {
-    "id": "didem-tekbudak",
-    "name": "Didem Tekbudak",
-    "role_tr": "Tasarım Birimi",
-    "role_en": "Design Unit",
-    "photo": "assets/team/didem-tekbudak.webp",
-    "order": 18
+    "order": 15
   },
   {
     "id": "batuhan-canal",
     "name": "Batuhan Canal",
     "role_tr": "Sosyal Medya Birimi",
     "role_en": "Social Media Unit",
+    "group": "social",
     "photo": "assets/team/batuhan-canal.webp",
-    "order": 19
+    "order": 16
+  },
+  {
+    "id": "cansu-aydemir",
+    "name": "Cansu Aydemir",
+    "role_tr": "Denetim Kurulu Üyesi",
+    "role_en": "Audit Board Member",
+    "group": "audit",
+    "photo": "assets/team/cansu-aydemir.webp",
+    "order": 17
   },
   {
     "id": "mohammad-murad-chamaa",
     "name": "Mohammad Murad Chamaa",
-    "role_tr": "Danışman",
-    "role_en": "Advisor",
+    "role_tr": "Denetim Kurulu Üyesi",
+    "role_en": "Audit Board Member",
+    "group": "audit",
     "photo": "assets/team/mohammad-murad-chamaa.webp",
-    "order": 20
+    "order": 18
   },
   {
     "id": "yigit-unal",
     "name": "Yiğit Ünal",
-    "role_tr": "Danışman",
-    "role_en": "Advisor",
+    "role_tr": "Denetim Kurulu Üyesi",
+    "role_en": "Audit Board Member",
+    "group": "audit",
     "photo": "assets/team/yigit-unal.webp",
-    "order": 21
+    "order": 19
   },
   {
     "id": "mehmet-ali-ozek",
     "name": "Mehmet Ali Özek",
-    "role_tr": "Danışman",
-    "role_en": "Advisor",
+    "role_tr": "Denetim Kurulu Üyesi",
+    "role_en": "Audit Board Member",
+    "group": "audit",
     "photo": "",
-    "order": 22
+    "order": 20
   },
   {
     "id": "abdulhamid-uysal",
     "name": "Abdülhamid Uysal",
-    "role_tr": "Danışman",
-    "role_en": "Advisor",
+    "role_tr": "Denetim Kurulu Üyesi",
+    "role_en": "Audit Board Member",
+    "group": "audit",
     "photo": "",
-    "order": 23
+    "order": 21
   }
 ]
